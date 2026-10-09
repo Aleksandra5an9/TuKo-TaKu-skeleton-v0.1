@@ -3,6 +3,8 @@
 
     const game = global.TUKO_TAKU;
     game.scenes = game.scenes || {};
+    let currentVoice = null;
+    let arenaMusic = null;
 
     const ASSETS = {
         background: "assets/images/arena_bg.png",
@@ -402,9 +404,6 @@
         };
     }
 
-    let currentVoice = null;
-    let arenaMusic = null;
-
     game.scenes.arena_intro = {
         id: "arena_intro",
 
@@ -556,11 +555,6 @@
                 currentVoice = null;
             }
 
-            if (arenaMusic) {
-                arenaMusic.pause();
-                arenaMusic.currentTime = 0;
-                arenaMusic = null;
-            }
         }
     };
 
@@ -3503,6 +3497,13 @@
                 "click",
                 function () {
                     stopCrowdCelebration();
+
+                     if (arenaMusic) {
+                        arenaMusic.pause();
+                        arenaMusic.currentTime = 0;
+                        arenaMusic = null;
+                    }
+
                     context.goTo("board_after_arena", {
                         checkpointId: "board_after_arena",
                         save: true,
