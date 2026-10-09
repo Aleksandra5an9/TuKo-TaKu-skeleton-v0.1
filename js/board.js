@@ -144,7 +144,8 @@
 
         applyBoardSeals({
             screen: screen,
-            center: center
+            center: center,
+            deferBalanceSeal: settings.deferBalanceSeal === true
         });
 
         return {
@@ -185,7 +186,7 @@
 
         board.screen.classList.toggle(
             "board-seal-reveal",
-            hasBalanceSeal
+            hasBalanceSeal && !board.deferBalanceSeal
         );
 
         const navigationSeal = board.screen.querySelector(
@@ -734,11 +735,14 @@
                 buttonDisabled: true,
                 showPlayer: false,
                 worldsVisible: false,
+
+                // Первую печать пока не показываем.
+                deferBalanceSeal: true,
+
                 screenClass: "board-after-tavern-screen",
                 onAction: function () {}
             }, context);
 
-            board.screen.classList.remove("board-seal-reveal");
             board.caption.remove();
             board.screen.classList.add("board-tavern-open","board-tavern-complete");
             board.nodes.tavern.classList.add(
@@ -805,6 +809,8 @@
                     }
                 });
 
+                board.screen.classList.remove("board-seal-reveal");
+                void board.screen.offsetWidth;
                 board.screen.classList.add("board-seal-reveal");
 
                 game.audio.playVoice("assets/audio/seal_reveal.mp3");
@@ -2516,14 +2522,6 @@
 
         mount: function (root, context) {
             game.state.patch({ activePlayer: "taku" });
-
-                        // Готовим видео дверей до входа в Казино.
-            if (
-                game.preloader &&
-                typeof game.preloader.preloadCasinoDoorVideo === "function"
-            ) {
-                game.preloader.preloadCasinoDoorVideo();
-            }
 
             let phase = game.state.get().pathSteps.taku >= 6 ? "open" : "waiting";
             let board;
