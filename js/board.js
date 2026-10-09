@@ -738,6 +738,7 @@
                 onAction: function () {}
             }, context);
 
+            board.screen.classList.remove("board-seal-reveal");
             board.caption.remove();
             board.screen.classList.add("board-tavern-open","board-tavern-complete");
             board.nodes.tavern.classList.add(
