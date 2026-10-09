@@ -423,26 +423,38 @@
             const playPromise = video.play();
             if (playPromise && typeof playPromise.catch === "function") {
                 playPromise.catch(function (error) {
-                    started = false;
-                    console.warn("Не удалось запустить casino_door_transition.mp4:", error);
+                    if (finished) {
+                        return;
+                    }
+
+                    console.warn("Не удалось запустить видео двери Казино со звуком:", error);
+
+                    // Если браузер запрещает autoplay со звуком, делаем одну попытку без звука.
+                    video.muted = true;
+                    const retryPromise = video.play();
+
+                    if (retryPromise && typeof retryPromise.catch === "function") {
+                        retryPromise.catch(function (retryError) {
+                            console.error("Не удалось запустить видео двери и без звука:", retryError);
+                            goNext();
+                        });
+                    }
                 });
             }
         }
 
         function onVideoEnded() {
-            if (!started || !Number.isFinite(video.duration) || video.duration <= 0) {
-                return;
-            }
-
-            if (video.currentTime < video.duration - 0.15) {
-                return;
-            }
-
+            // Событие ended уже означает, что воспроизведение завершилось.
             goNext();
         }
 
         function onVideoError(error) {
-            console.warn("Ошибка видео casino_door_transition.mp4:", error);
+            console.error(
+                "Ошибка загрузки casino_door_transition.mp4:",
+                video.error || error
+            );
+            // Ошибка видео не должна оставлять игрока на бесконечном чёрном экране.
+            goNext();
         }
 
         video.addEventListener("loadeddata", startVideo);
@@ -450,15 +462,31 @@
         video.addEventListener("ended", onVideoEnded);
         video.addEventListener("error", onVideoError);
 
+        // Если предзагрузка завершилась ошибкой ещё до установки обработчика.
+        if (video.error) {
+            onVideoError(video.error);
+            return;
+        }
+
         // Даём CSS возможность применить начальное состояние перед появлением слоя.
         context.timeout(function () {
-            screen.classList.add("casino-ready");
+            if (!finished) {
+                screen.classList.add("casino-ready");
+            }
         }, 50);
 
         // Если предзагрузка уже завершилась, начинаем немедленно, не ждём таймер.
         if (video.readyState >= 2) {
             startVideo();
         }
+
+        // Аварийная защита на случай, если браузер не прислал ended/error.
+        context.timeout(function () {
+            if (!finished) {
+                console.warn("Истекло время ожидания видео дверей Казино; переходим дальше.");
+                goNext();
+            }
+        }, 15000);
     }
 
     function addHud(screen, context, title) {
