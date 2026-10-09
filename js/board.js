@@ -2517,6 +2517,14 @@
         mount: function (root, context) {
             game.state.patch({ activePlayer: "taku" });
 
+                        // Готовим видео дверей до входа в Казино.
+            if (
+                game.preloader &&
+                typeof game.preloader.preloadCasinoDoorVideo === "function"
+            ) {
+                game.preloader.preloadCasinoDoorVideo();
+            }
+
             let phase = game.state.get().pathSteps.taku >= 6 ? "open" : "waiting";
             let board;
 
