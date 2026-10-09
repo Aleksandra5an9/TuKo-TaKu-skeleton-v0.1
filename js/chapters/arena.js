@@ -402,6 +402,9 @@
         };
     }
 
+    let currentVoice = null;
+    let arenaMusic = null;
+
     game.scenes.arena_intro = {
         id: "arena_intro",
 
@@ -438,8 +441,6 @@
                 "arena_tuko_02.mp3"
             ];
 
-            let currentVoice = null;
-            let arenaMusic = null;
             let introFinished = false;
 
             function playArenaVoice(file) {
