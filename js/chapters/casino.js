@@ -26,6 +26,8 @@
     }
     game.preloader = game.preloader || {};
     game.preloader.preloadCasinoDoorVideo = preloadCasinoDoorVideo;
+    // Запускаем загрузку заранее, пока игрок проходит предыдущие сцены.
+    preloadCasinoDoorVideo();
     game.chapters = game.chapters || {};
     game.chapters.casino = { id: "casino", status: "active" };
 
@@ -335,25 +337,24 @@
     }
 
     function playCasinoDoorTransition(root, context, nextScene, saveReason) {
-
         const screen = document.createElement("section");
         screen.className = "screen casino-door-transition-screen";
 
-        /* Переход должен быть поверх текущей сцены */
         screen.style.position = "fixed";
         screen.style.inset = "0";
         screen.style.zIndex = "999999";
         screen.style.pointerEvents = "auto";
         screen.style.background = "#000";
 
-        const video = document.createElement("video");
-
+        // ВАЖНО: используем тот же элемент, который уже начал загружаться.
+        // Не создаём второй video и не запускаем повторный запрос файла.
+        const video = preloadCasinoDoorVideo();
+        video.pause();
         video.className = "casino-door-transition-video";
-        video.src = "assets/video/casino_door_transition.mp4";
-
         video.preload = "auto";
         video.autoplay = false;
-
+        video.controls = false;
+        video.loop = false;
         video.playsInline = true;
         video.setAttribute("playsinline", "");
         video.setAttribute("webkit-playsinline", "");
@@ -370,130 +371,94 @@
         let finished = false;
         let started = false;
 
-        function goNext() {
+        function removeVideoListeners() {
+            video.removeEventListener("loadeddata", startVideo);
+            video.removeEventListener("canplay", startVideo);
+            video.removeEventListener("ended", onVideoEnded);
+            video.removeEventListener("error", onVideoError);
+        }
 
+        function goNext() {
             if (finished) {
                 return;
             }
 
             finished = true;
-
+            removeVideoListeners();
             video.pause();
+
+            // Возвращаем закэшированное видео в начало для следующего перехода.
+            try {
+                video.currentTime = 0;
+            } catch (error) {
+                // Если метаданные ещё не готовы, следующий запуск дождётся загрузки.
+            }
+
             video.remove();
 
             context.goTo(nextScene, {
                 checkpointId: nextScene,
                 save: true,
-                saveReason:
-                    saveReason ||
-                    ("Казино: переход в " + nextScene)
+                saveReason: saveReason || ("Казино: переход в " + nextScene)
             });
         }
 
         function startVideo() {
-
-            if (started || finished) {
+            if (started || finished || video.readyState < 2) {
                 return;
             }
 
             started = true;
 
-            video.currentTime = 0;
+            // При повторном использовании элемента перематываем его к началу.
+            try {
+                if (video.currentTime > 0.05) {
+                    video.currentTime = 0;
+                }
+            } catch (error) {
+                // play() ниже продолжит запуск; ошибку перемотки не скрываем в консоли.
+                console.warn("Не удалось перемотать видео двери казино:", error);
+            }
 
             const playPromise = video.play();
-
-            if (
-                playPromise &&
-                typeof playPromise.catch === "function"
-            ) {
+            if (playPromise && typeof playPromise.catch === "function") {
                 playPromise.catch(function (error) {
-
-                    console.warn(
-                        "Не удалось запустить casino_door_transition.mp4:",
-                        error
-                    );
-
+                    started = false;
+                    console.warn("Не удалось запустить casino_door_transition.mp4:", error);
                 });
             }
         }
 
-        /*
-        * Ждём, пока видео реально будет готово.
-        */
-        video.addEventListener(
-            "loadeddata",
-            startVideo
-        );
-
-        video.addEventListener(
-            "canplay",
-            startVideo
-        );
-
-        /*
-        * Переход только после нормального окончания
-        * реально проигравшего видео.
-        */
-        video.addEventListener(
-            "ended",
-            function () {
-
-                if (!started) {
-                    return;
-                }
-
-                /*
-                * Не даём ошибочному/пустому видео
-                * сразу отправить игрока в следующую сцену.
-                */
-                if (
-                    !Number.isFinite(video.duration) ||
-                    video.duration <= 0
-                ) {
-                    return;
-                }
-
-                if (
-                    video.currentTime <
-                    video.duration - 0.15
-                ) {
-                    return;
-                }
-
-                goNext();
+        function onVideoEnded() {
+            if (!started || !Number.isFinite(video.duration) || video.duration <= 0) {
+                return;
             }
-        );
 
-        video.addEventListener(
-            "error",
-            function (error) {
-
-                console.warn(
-                    "Ошибка видео casino_door_transition.mp4:",
-                    error
-                );
-
-                /*
-                * ВАЖНО:
-                * при ошибке видео НЕ переходим автоматически
-                * в следующую сцену.
-                */
+            if (video.currentTime < video.duration - 0.15) {
+                return;
             }
-        );
 
-        /*
-        * Если браузер уже успел загрузить видео
-        * до добавления обработчиков.
-        */
+            goNext();
+        }
+
+        function onVideoError(error) {
+            console.warn("Ошибка видео casino_door_transition.mp4:", error);
+        }
+
+        video.addEventListener("loadeddata", startVideo);
+        video.addEventListener("canplay", startVideo);
+        video.addEventListener("ended", onVideoEnded);
+        video.addEventListener("error", onVideoError);
+
+        // Даём CSS возможность применить начальное состояние перед появлением слоя.
         context.timeout(function () {
-
             screen.classList.add("casino-ready");
-
-            if (video.readyState >= 2) {
-                startVideo();
-            }
-
         }, 50);
+
+        // Если предзагрузка уже завершилась, начинаем немедленно, не ждём таймер.
+        if (video.readyState >= 2) {
+            startVideo();
+        }
     }
 
     function addHud(screen, context, title) {
