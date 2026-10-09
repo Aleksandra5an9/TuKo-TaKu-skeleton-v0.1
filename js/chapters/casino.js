@@ -3,6 +3,29 @@
 
     const game = global.TUKO_TAKU;
     game.scenes = game.scenes || {};
+        // Предварительная загрузка видео дверей Казино.
+    let casinoDoorVideoPreload = null;
+
+    function preloadCasinoDoorVideo() {
+        if (casinoDoorVideoPreload) {
+            return casinoDoorVideoPreload;
+        }
+
+        const video = document.createElement("video");
+
+        video.preload = "auto";
+        video.playsInline = true;
+        video.setAttribute("playsinline", "");
+        video.src = "assets/video/casino_door_transition.mp4";
+
+        // Начинаем загружать файл заранее, без воспроизведения.
+        video.load();
+
+        casinoDoorVideoPreload = video;
+        return video;
+    }
+    game.preloader = game.preloader || {};
+    game.preloader.preloadCasinoDoorVideo = preloadCasinoDoorVideo;
     game.chapters = game.chapters || {};
     game.chapters.casino = { id: "casino", status: "active" };
 
