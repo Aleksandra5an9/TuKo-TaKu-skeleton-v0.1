@@ -16,7 +16,7 @@
         video.preload = "auto";
         video.playsInline = true;
         video.setAttribute("playsinline", "");
-        video.src = "assets/video/casino_door_transition.mp4";
+        video.src = "assets/video/casino_door_transition.mp4?v=20261009-720p30";
 
         // Начинаем загружать файл заранее, без воспроизведения.
         video.load();
