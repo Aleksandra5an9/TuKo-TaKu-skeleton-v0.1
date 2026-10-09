@@ -1,0 +1,2593 @@
+/* =========================================================
+   ЦЕНТРАЛЬНЫЙ СТОЛ / КОСТЬ / ПЕРЕДАЧА ХОДА
+   Вынесено из css/scenes.css без изменения исходного вида.
+========================================================= */
+
+.board-screen {
+    background:
+        linear-gradient(180deg, rgba(2, 2, 6, 0.32), transparent 23%, transparent 72%, rgba(2, 2, 6, 0.58)),
+        url("../assets/images/central_table_bg.png") center center / cover no-repeat;
+}
+
+.board-screen::before {
+    z-index: 0;
+    opacity: 0.46;
+    background:
+        radial-gradient(circle, rgba(255, 219, 135, 0.65) 0 1px, transparent 2px),
+        radial-gradient(circle, rgba(109, 238, 255, 0.44) 0 1px, transparent 2px),
+        radial-gradient(circle, rgba(191, 110, 255, 0.48) 0 1px, transparent 2px);
+    background-position: 0 0, 47px 29px, 81px 103px;
+    background-size: 139px 139px, 193px 193px, 241px 241px;
+    animation: board-dust 24s linear infinite;
+}
+
+.board-screen::after {
+    z-index: 0;
+    background:
+        radial-gradient(ellipse at 50% 44%, transparent 17%, rgba(2, 2, 6, 0.08) 51%, rgba(2, 2, 6, 0.64) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.38), transparent 14%, transparent 86%, rgba(0, 0, 0, 0.38));
+}
+
+.board-content {
+    z-index: 2;
+    padding: 0;
+}
+
+.board-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.board-atmosphere {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0;
+    background:
+        radial-gradient(ellipse at 20% 22%, rgba(74, 255, 155, 0.16), transparent 22%),
+        radial-gradient(ellipse at 81% 20%, rgba(81, 223, 255, 0.15), transparent 23%),
+        radial-gradient(ellipse at 16% 65%, rgba(255, 84, 211, 0.12), transparent 21%),
+        radial-gradient(ellipse at 84% 65%, rgba(255, 99, 59, 0.13), transparent 21%);
+    transition: opacity 900ms ease;
+    pointer-events: none;
+}
+
+.board-ready .board-atmosphere {
+    opacity: 1;
+}
+
+.board-center {display: none !important;}
+
+.world-node {
+    position: absolute;
+    z-index: 5;
+    display: grid;
+    width: clamp(150px, 14vw, 220px);
+    min-height: 76px;
+    padding: 10px 15px 12px;
+    border: 1px solid var(--node-color);
+    border-radius: 15px;
+    color: var(--text);
+    background: rgba(5, 5, 12, 0.84);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.52), 0 0 22px var(--node-glow);
+    opacity: 0;
+    text-align: center;
+    transform: translateY(9px) scale(0.96);
+    transition: opacity 420ms ease, transform 420ms ease, box-shadow 300ms ease, border-color 300ms ease;
+    backdrop-filter: blur(10px);
+    place-items: center;
+}
+
+.world-node.is-revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.world-node-status {
+    display: block;
+    color: rgba(255, 255, 255, 0.56);
+    font-size: clamp(9px, 0.68vw, 11px);
+    font-weight: 900;
+    letter-spacing: 0.16em;
+}
+
+.world-node strong {
+    display: block;
+    color: var(--node-color);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(19px, 1.6vw, 27px);
+    line-height: 1.05;
+}
+
+.world-node small {
+    color: var(--muted);
+    font-size: clamp(9px, 0.7vw, 12px);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.world-node.is-active {
+    border-color: var(--gold-pale);
+    box-shadow: 0 0 38px var(--node-glow), inset 0 0 26px var(--node-glow);
+    animation: active-world-pulse 1.4s ease-in-out infinite alternate;
+}
+
+.world-node.is-active .world-node-status {
+    color: var(--green);
+}
+
+.node-tavern {
+    top: 19%;
+    left: 4.5%;
+    --node-color: #7bf2a1;
+    --node-glow: rgba(89, 255, 153, 0.24);
+}
+
+.node-spaceport {
+    top: 18%;
+    right: 4.5%;
+    --node-color: #73edff;
+    --node-glow: rgba(75, 225, 255, 0.25);
+}
+
+.node-casino {
+    bottom: 20%;
+    left: 4.5%;
+    --node-color: #ffc85e;
+    --node-glow: rgba(255, 82, 210, 0.24);
+}
+
+.node-arena {
+    right: 4.5%;
+    bottom: 20%;
+    --node-color: #ff8069;
+    --node-glow: rgba(255, 91, 58, 0.26);
+}
+
+.board-center {
+    position: absolute;
+    top: 44%;
+    left: 50%;
+    z-index: 6;
+    display: grid;
+    width: clamp(116px, 10vw, 154px);
+    min-height: 82px;
+    padding: 12px;
+    border: 1px solid rgba(245, 199, 93, 0.62);
+    border-radius: 50%;
+    color: var(--gold-pale);
+    background: rgba(7, 5, 11, 0.72);
+    box-shadow: 0 0 28px rgba(245, 199, 93, 0.17), inset 0 0 22px rgba(245, 199, 93, 0.09);
+    opacity: 0;
+    text-align: center;
+    transform: translate(-50%, -50%) scale(0.86);
+    transition: opacity 620ms ease 200ms, transform 620ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms;
+    backdrop-filter: blur(7px);
+    place-items: center;
+}
+
+.board-ready .board-center {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.board-center span {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(15px, 1.25vw, 20px);
+    line-height: 1;
+}
+
+.board-center small {
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.board-piece {
+    position: absolute;
+    z-index: 8;
+    object-fit: contain;
+    opacity: 0;
+    filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.76));
+    transition:
+        opacity 520ms ease 300ms,
+        left 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        right 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        bottom 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        filter 300ms ease;
+}
+
+.board-ready .board-piece {
+    opacity: 1;
+}
+
+.board-piece-tuko {
+    bottom: 15%;
+    left: 43%;
+    width: clamp(64px, 6.2vw, 100px);
+    transform: rotate(-5deg);
+}
+
+.board-piece-taku {
+    right: 42.5%;
+    bottom: 15%;
+    width: clamp(66px, 6.4vw, 104px);
+    transform: rotate(4deg);
+}
+
+.board-piece-stitch {
+    bottom: 13%;
+    left: 50%;
+    width: clamp(58px, 5.6vw, 92px);
+    transform: translateX(-50%);
+}
+
+.board-tuko-moved .board-piece-tuko {
+    bottom: 33%;
+    left: 31%;
+    filter: drop-shadow(0 0 20px rgba(113, 255, 157, 0.65)) drop-shadow(0 18px 20px rgba(0, 0, 0, 0.76));
+    transform: rotate(-8deg) scale(1.04);
+}
+
+.board-caption {
+    position: absolute;
+    top: clamp(84px, 9vh, 108px);
+    left: 50%;
+    z-index: 12;
+    width: min(650px, 52vw);
+    padding: 14px 22px 16px;
+    opacity: 0;
+    text-align: center;
+    transform: translate(-50%, -12px);
+    transition: opacity 520ms ease, transform 520ms ease;
+}
+
+.board-ready .board-caption {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.board-caption .eyebrow {
+    margin-bottom: 4px;
+    font-size: 10px;
+}
+
+.board-caption h1 {
+    margin: 0 0 5px;
+    color: var(--gold-pale);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(25px, 2.6vw, 40px);
+    line-height: 1.05;
+}
+
+.board-caption-text {
+    margin: 0;
+    color: var(--muted);
+    font-size: clamp(13px, 1vw, 17px);
+    line-height: 1.4;
+}
+
+.board-actions {
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.board-actions .gold-button {
+    min-height: 48px;
+    padding: 10px 22px;
+    font-size: clamp(12px, 0.9vw, 15px);
+}
+
+.magic-die {
+    display: grid;
+    width: clamp(70px, 6vw, 96px);
+    aspect-ratio: 1;
+    border: 2px solid var(--gold);
+    border-radius: 19px;
+    color: var(--gold-pale);
+    background:
+        radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.24), transparent 30%),
+        linear-gradient(145deg, #442813, #0b0911 68%);
+    box-shadow: 0 0 30px rgba(245, 199, 93, 0.35), inset 0 0 20px rgba(245, 199, 93, 0.14);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(36px, 3.5vw, 56px);
+    font-weight: 800;
+    place-items: center;
+}
+
+.board-die {
+    position: absolute;
+    top: 44%;
+    left: 50%;
+    z-index: 14;
+    transform: translate(-50%, -50%);
+}
+
+.board-die.is-rolling {
+    animation: board-die-roll 180ms linear infinite;
+}
+
+.board-tavern-open .board-atmosphere {
+    opacity: 1;
+    background:
+        radial-gradient(ellipse at 20% 22%, rgba(78, 255, 151, 0.34), transparent 27%),
+        radial-gradient(ellipse at 50% 44%, rgba(255, 202, 93, 0.1), transparent 19%);
+}
+
+.handover-screen {
+    place-items: center;
+}
+
+.board-handover-screen {
+    background:
+        linear-gradient(90deg, rgba(3, 3, 8, 0.82), rgba(3, 3, 8, 0.54), rgba(3, 3, 8, 0.82)),
+        url("../assets/images/central_table_bg.png") center center / cover no-repeat;
+}
+
+.board-handover-screen::before {
+    z-index: 0;
+    background: radial-gradient(circle at 40% 50%, rgba(245, 199, 93, 0.18), transparent 27%);
+}
+
+.board-handover-screen::after {
+    z-index: 0;
+    background: rgba(2, 2, 7, 0.34);
+    backdrop-filter: blur(5px);
+}
+
+.handover-card {
+    position: relative;
+    z-index: 4;
+    width: min(900px, calc(100vw - 48px));
+    padding: clamp(28px, 4vw, 54px);
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    transition: opacity 520ms ease, transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.handover-ready .handover-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.handover-card-tuko {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.7fr) minmax(340px, 1.3fr);
+    gap: clamp(28px, 5vw, 62px);
+    align-items: center;
+}
+
+.handover-avatar-wrap {
+    position: relative;
+    display: grid;
+    min-height: 330px;
+    place-items: center;
+}
+
+.handover-avatar-wrap::before {
+    position: absolute;
+    width: min(260px, 22vw);
+    aspect-ratio: 1;
+    border: 1px solid rgba(245, 199, 93, 0.42);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle, rgba(245, 199, 93, 0.2), transparent 55%),
+        repeating-conic-gradient(rgba(245, 199, 93, 0.13) 0 1deg, transparent 1deg 24deg);
+    box-shadow: 0 0 50px rgba(245, 199, 93, 0.13);
+    content: "";
+}
+
+.handover-avatar {
+    position: relative;
+    z-index: 2;
+    width: min(230px, 18vw);
+    max-height: 360px;
+    object-fit: contain;
+    filter: drop-shadow(0 26px 28px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 18px rgba(245, 199, 93, 0.22));
+}
+
+.handover-copy {
+    text-align: left;
+}
+
+.handover-turn {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 7px 11px;
+    border: 1px solid rgba(245, 199, 93, 0.34);
+    border-radius: 999px;
+    color: var(--gold-pale);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+}
+
+.handover-card h1 {
+    margin: 0 0 14px;
+    color: var(--gold-pale);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 0.98;
+}
+
+.handover-card p {
+    margin: 0 0 28px;
+    color: var(--muted);
+    font-size: clamp(17px, 1.5vw, 23px);
+    line-height: 1.5;
+}
+
+
+@keyframes board-dust {
+    to {
+        background-position: 139px -139px, -146px 222px, 241px -241px;
+    }
+}
+
+@keyframes active-world-pulse {
+    from {
+        transform: translateY(0) scale(1);
+    }
+    to {
+        transform: translateY(-2px) scale(1.025);
+    }
+}
+
+@keyframes board-die-roll {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    }
+    35% {
+        transform: translate(-50%, -50%) rotate(18deg) scale(1.1);
+    }
+    70% {
+        transform: translate(-50%, -50%) rotate(-15deg) scale(0.96);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    }
+}
+
+/* Дополнения после Таверны */
+
+
+.world-node.is-complete {
+    border-color: rgba(106, 255, 129, 0.9);
+    box-shadow:
+        0 0 38px rgba(106, 255, 129, 0.28),
+        inset 0 0 26px rgba(106, 255, 129, 0.12);
+    animation: none;
+}
+
+.world-node.is-complete .world-node-status {
+    color: var(--green);
+}
+
+.board-tavern-complete .board-atmosphere {
+    opacity: 1;
+    background:
+        radial-gradient(ellipse at 20% 22%, rgba(78, 255, 151, 0.28), transparent 27%),
+        radial-gradient(ellipse at 50% 44%, rgba(255, 202, 93, 0.10), transparent 19%);
+}
+
+.board-taku-moved .board-piece-taku {
+    right: 31%;
+    bottom: 33%;
+    filter:
+        drop-shadow(0 0 20px rgba(187, 120, 255, 0.68))
+        drop-shadow(0 18px 20px rgba(0, 0, 0, 0.76));
+    transform: rotate(7deg) scale(1.04);
+}
+
+.board-spaceport-open .board-atmosphere {
+    opacity: 1;
+    background:
+        radial-gradient(ellipse at 20% 22%, rgba(78, 255, 151, 0.18), transparent 25%),
+        radial-gradient(ellipse at 81% 20%, rgba(81, 223, 255, 0.30), transparent 27%),
+        radial-gradient(ellipse at 50% 44%, rgba(187, 120, 255, 0.10), transparent 19%);
+}
+
+/* Событие поля: пикси на каблуке ТуКо */
+.board-pixie-event {
+    position: absolute;
+    left: 31.5%;
+    top: 23%;
+    z-index: 20;
+    display: grid;
+    width: clamp(58px, 5.4vw, 86px);
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1;
+    padding: 4px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+    opacity: 0;
+    transform: translate(-50%, 14px) scale(0.65) rotate(-8deg);
+    transition: opacity 380ms ease, transform 480ms cubic-bezier(0.2, 1.2, 0.35, 1);
+    pointer-events: none;
+    place-items: center;
+}
+
+.board-pixie-ready .board-pixie-event {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1) rotate(-8deg);
+    pointer-events: auto;
+    animation: board-pixie-bob 760ms ease-in-out infinite alternate;
+}
+
+.board-pixie-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(255, 228, 120, 0.82));
+}
+
+.board-pixie-fallback {
+    display: none;
+    font-size: clamp(34px, 3.8vw, 56px);
+}
+
+.board-pixie-event.use-pixie-fallback .board-pixie-image {
+    display: none;
+}
+
+.board-pixie-event.use-pixie-fallback .board-pixie-fallback {
+    display: block;
+}
+
+/* ТаКу использует ту же карточку передачи хода, но с фиолетовым акцентом */
+.handover-card-taku {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.7fr) minmax(340px, 1.3fr);
+    gap: clamp(28px, 5vw, 62px);
+    align-items: center;
+    border-color: rgba(187, 120, 255, 0.36);
+}
+
+.handover-card-taku .handover-avatar-wrap::before {
+    border-color: rgba(187, 120, 255, 0.45);
+    background:
+        radial-gradient(circle, rgba(187, 120, 255, 0.20), transparent 55%),
+        repeating-conic-gradient(rgba(187, 120, 255, 0.13) 0 1deg, transparent 1deg 24deg);
+    box-shadow: 0 0 50px rgba(187, 120, 255, 0.16);
+}
+
+.handover-card-taku .handover-avatar {
+    filter:
+        drop-shadow(0 26px 28px rgba(0, 0, 0, 0.7))
+        drop-shadow(0 0 20px rgba(187, 120, 255, 0.30));
+}
+
+/* Исходный адаптив Центрального стола, перенесён из scenes.css */
+
+@media (max-width: 980px) {
+    .board-caption {
+        width: min(650px, 66vw);
+    }
+
+    .world-node {
+        width: clamp(132px, 18vw, 178px);
+        min-height: 68px;
+        padding: 8px 10px;
+    }
+
+    .node-tavern,
+    .node-casino {
+        left: 2.5%;
+    }
+
+    .node-spaceport,
+    .node-arena {
+        right: 2.5%;
+    }
+
+    .board-piece-tuko {
+        left: 41%;
+    }
+
+    .board-piece-taku {
+        right: 40.5%;
+    }
+
+    .handover-card-tuko {
+        grid-template-columns: 180px 1fr;
+    }
+
+    .handover-avatar-wrap {
+        min-height: 280px;
+    }
+
+    .handover-avatar {
+        width: min(190px, 23vw);
+    }
+}
+
+@media (max-height: 700px) {
+    .board-stage {
+        width: 100%;
+        height: 100%;
+        transform: none;
+    }
+    .board-caption {
+        top: 70px;
+        width: min(620px, 58vw);
+        padding: 9px 16px 11px;
+    }
+
+    .board-caption h1 {
+        font-size: clamp(22px, 2.3vw, 32px);
+    }
+
+    .board-caption-text {
+        font-size: 12px;
+    }
+
+    .board-actions {
+        margin-top: 7px;
+    }
+
+    .board-actions .gold-button {
+        min-height: 42px;
+        padding: 8px 17px;
+    }
+
+    .world-node {
+        width: 142px;
+        min-height: 58px;
+        padding: 6px 9px;
+    }
+
+    .world-node strong {
+        font-size: 18px;
+    }
+
+    .node-tavern,
+    .node-spaceport {
+        top: 20%;
+    }
+
+    .node-casino,
+    .node-arena {
+        bottom: 18%;
+    }
+
+    .board-piece {
+        max-height: 96px;
+    }
+
+    .board-center {
+        width: 112px;
+        min-height: 68px;
+    }
+
+    .handover-card {
+        padding: 24px 34px;
+    }
+
+    .handover-avatar-wrap {
+        min-height: 230px;
+    }
+
+    .handover-avatar {
+        max-height: 240px;
+    }
+
+    .handover-card h1 {
+        font-size: clamp(36px, 4.5vw, 58px);
+    }
+
+    .handover-card p {
+        margin-bottom: 18px;
+        font-size: 16px;
+    }
+}
+
+
+/* =========================================================
+   ПОСЛЕ КОСМОПОРТА · ПЕРЕСЧЁТ
+   ========================================================= */
+
+.board-spaceport-complete .node-spaceport {
+    border-color: rgba(125, 236, 255, 0.92);
+    box-shadow:
+        0 0 40px rgba(83, 225, 255, 0.28),
+        inset 0 0 28px rgba(128, 102, 255, 0.10);
+    animation: none;
+}
+
+.board-spaceport-complete .node-spaceport .world-node-status {
+    color: #87efff;
+}
+
+.board-spaceport-complete .board-atmosphere {
+    opacity: 1;
+    background:
+        radial-gradient(ellipse at 20% 22%, rgba(78, 255, 151, 0.18), transparent 25%),
+        radial-gradient(ellipse at 81% 20%, rgba(81, 223, 255, 0.32), transparent 27%),
+        radial-gradient(ellipse at 50% 44%, rgba(187, 120, 255, 0.12), transparent 20%);
+}
+
+.board-recount-event {
+    position: absolute;
+    right: 25.5%;
+    bottom: 30%;
+    z-index: 21;
+    display: grid;
+    min-width: 116px;
+    padding: 10px 12px 9px;
+    border: 1px solid rgba(189, 119, 255, 0.60);
+    border-radius: 18px;
+    color: #f2e8ff;
+    background: rgba(11, 6, 23, 0.82);
+    box-shadow: 0 0 30px rgba(175, 94, 255, 0.20), 0 14px 34px rgba(0, 0, 0, 0.48);
+    opacity: 0;
+    cursor: pointer;
+    transform: translateY(12px) scale(0.88) rotate(3deg);
+    transition: opacity 420ms ease, transform 520ms cubic-bezier(0.2, 0.9, 0.2, 1), filter 280ms ease;
+    place-items: center;
+}
+
+.board-recount-ready .board-recount-event {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(3deg);
+}
+
+.recount-die-face {
+    display: grid;
+    width: 82px;
+    aspect-ratio: 1;
+    padding: 10px;
+    border: 2px solid rgba(243, 205, 108, 0.72);
+    border-radius: 18px;
+    background: linear-gradient(145deg, #342047, #0b0812 68%);
+    box-shadow: inset 0 0 22px rgba(187, 120, 255, 0.12), 0 0 22px rgba(245, 199, 93, 0.15);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    place-items: center;
+}
+
+.recount-die-face i {
+    color: #f7dc91;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 800;
+    transition: transform 180ms ease, color 180ms ease;
+}
+
+.board-recount-event small {
+    margin-top: 7px;
+    color: #cfb5f4;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+}
+
+.board-recount-running .board-recount-event {
+    animation: recount-die-shake 150ms ease-in-out 5 alternate;
+}
+
+.board-recount-running .recount-die-face i {
+    color: #be80ff;
+    transform: rotate(18deg) scale(1.12);
+}
+
+.board-recount-host-reset .board-recount-event {
+    filter: brightness(1.5) drop-shadow(0 0 18px rgba(255, 211, 104, 0.62));
+}
+
+.board-recount-event.is-finished {
+    opacity: 0.58;
+    pointer-events: none;
+}
+
+@keyframes recount-die-shake {
+    from { transform: translate(-4px, 1px) scale(1.02) rotate(-3deg); }
+    to { transform: translate(5px, -2px) scale(1.05) rotate(6deg); }
+}
+
+/* =========================================================
+   ВТОРОЙ ХОД ТуКо · ОТКРЫТИЕ АРЕНЫ
+   ========================================================= */
+
+.board-arena-open .node-arena {
+    border-color: rgba(255, 139, 88, 0.92);
+    box-shadow:
+        0 0 42px rgba(255, 94, 48, 0.30),
+        inset 0 0 28px rgba(255, 145, 75, 0.12);
+}
+
+.board-arena-open .node-arena .world-node-status {
+    color: #ffb071;
+}
+
+.board-arena-open .board-atmosphere {
+    opacity: 1;
+    background:
+        radial-gradient(ellipse at 20% 22%, rgba(78, 255, 151, 0.13), transparent 24%),
+        radial-gradient(ellipse at 81% 20%, rgba(81, 223, 255, 0.18), transparent 25%),
+        radial-gradient(ellipse at 84% 67%, rgba(255, 91, 53, 0.28), transparent 27%),
+        radial-gradient(ellipse at 50% 44%, rgba(245, 199, 93, 0.08), transparent 18%);
+}
+
+/* Первая позиция ТуКо после Таверны остаётся board-tuko-moved.
+   Этот класс только переводит её на вторую позицию перед Ареной. */
+.board-tuko-arena .board-piece-tuko {
+    left: 63%;
+    bottom: 29%;
+    filter:
+        drop-shadow(0 0 22px rgba(255, 137, 74, 0.62))
+        drop-shadow(0 18px 20px rgba(0, 0, 0, 0.76));
+    transform: rotate(7deg) scale(1.05);
+}
+
+.handover-card-tuko-second {
+    border-color: rgba(106, 255, 129, 0.38);
+}
+
+/* =========================================================
+   ПОСЛЕ АРЕНЫ · ТуКо У ЦЕНТРА
+   ========================================================= */
+
+.board-arena-complete .node-arena {
+    border-color: rgba(119, 239, 151, 0.72);
+    box-shadow:
+        0 0 34px rgba(99, 234, 137, 0.22),
+        inset 0 0 24px rgba(100, 230, 136, 0.10);
+}
+
+.board-arena-complete .node-arena .world-node-status {
+    color: #8cf0a7;
+}
+
+.board-tuko-center .board-piece-tuko {
+    left: 50%;
+    bottom: 53%;
+    z-index: 11;
+    filter:
+        drop-shadow(0 0 25px rgba(101, 244, 145, 0.78))
+        drop-shadow(0 20px 22px rgba(0, 0, 0, 0.82));
+    transform: rotate(-2deg) scale(1.12);
+}
+
+.board-center-pressure {
+    position: absolute;
+    left: 50%;
+    bottom: 31.2%;
+    z-index: 7;
+    width: clamp(118px, 10vw, 164px);
+    aspect-ratio: 1.9;
+    border: 1px solid rgba(100, 244, 145, 0.72);
+    border-radius: 50%;
+    background:
+        radial-gradient(ellipse, rgba(109, 255, 153, 0.20), rgba(33, 108, 61, 0.10) 46%, transparent 70%);
+    box-shadow:
+        0 0 26px rgba(99, 239, 144, 0.46),
+        inset 0 0 20px rgba(123, 255, 164, 0.20);
+    opacity: 0;
+    transform: translateX(-50%) scale(0.72);
+    transition: opacity 520ms ease 220ms, transform 620ms cubic-bezier(0.2, 0.8, 0.2, 1) 220ms;
+    pointer-events: none;
+}
+
+.board-center-pressure::before,
+.board-center-pressure::after,
+.board-center-pressure span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    content: "";
+    transform: translate(-50%, -50%);
+}
+
+.board-center-pressure::before {
+    width: 72%;
+    height: 60%;
+    border: 1px solid rgba(119, 255, 164, 0.48);
+}
+
+.board-center-pressure::after {
+    width: 40%;
+    height: 34%;
+    background: rgba(101, 239, 145, 0.12);
+    box-shadow: 0 0 14px rgba(106, 244, 149, 0.55);
+}
+
+.board-center-pressure span {
+    width: 6px;
+    height: 6px;
+    background: #b6ffc7;
+    box-shadow: 0 0 12px #8ff5a9;
+}
+
+.board-center-waiting .board-center-pressure {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    animation: board-center-plate-pulse 1.7s ease-in-out infinite alternate;
+}
+
+.board-center-wait {
+    position: absolute;
+    top: 56%;
+    left: 50%;
+    z-index: 16;
+    display: grid;
+    width: min(470px, 42vw);
+    padding: 14px 20px 16px;
+    border: 1px solid rgba(116, 238, 151, 0.36);
+    border-radius: 17px;
+    color: #f0e9df;
+    background: rgba(5, 8, 6, 0.82);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.52), 0 0 28px rgba(92, 229, 132, 0.10);
+    opacity: 0;
+    text-align: center;
+    transform: translate(-50%, 15px);
+    transition: opacity 480ms ease 520ms, transform 480ms ease 520ms;
+    pointer-events: none;
+    backdrop-filter: blur(9px);
+}
+
+.board-center-waiting .board-center-wait {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.board-center-wait span,
+.board-center-wait small {
+    color: #86eaa0;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.13em;
+}
+
+.board-center-wait strong {
+    margin: 5px 0 4px;
+    color: #fff0cf;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(20px, 1.8vw, 29px);
+    font-weight: 500;
+}
+
+.board-after-arena-screen .board-caption {
+    width: min(620px, 49vw);
+}
+
+@keyframes board-center-plate-pulse {
+    from {
+        filter: brightness(0.95);
+        box-shadow: 0 0 20px rgba(99, 239, 144, 0.34), inset 0 0 16px rgba(123, 255, 164, 0.16);
+    }
+    to {
+        filter: brightness(1.18);
+        box-shadow: 0 0 38px rgba(99, 239, 144, 0.62), inset 0 0 26px rgba(123, 255, 164, 0.28);
+    }
+}
+
+@media (max-width: 980px) {
+    .board-center-wait {
+        top: 58%;
+        width: min(560px, 70vw);
+    }
+
+    .board-tuko-center .board-piece-tuko {
+        left: 46%;
+    }
+}
+
+/* =========================================================
+   ПОСЛЕ АРЕНЫ · ПЕРЕДАЧА ХОДА ТаКу
+   ========================================================= */
+
+.board-center-next {
+    margin-top: 12px;
+    pointer-events: auto;
+}
+
+.handover-card-taku-second {
+    border-color: rgba(187, 120, 255, 0.42);
+}
+
+/* =========================================================
+   ПОСЛЕДНИЙ ХОД ТаКу · ОТКРЫТИЕ КАЗИНО
+   ========================================================= */
+
+.board-casino-open .node-casino {
+    border-color: rgba(255, 202, 94, 0.92);
+    box-shadow:
+        0 0 42px rgba(255, 105, 213, 0.28),
+        inset 0 0 28px rgba(255, 207, 93, 0.12);
+}
+
+.board-casino-open .node-casino .world-node-status {
+    color: #ffd777;
+}
+
+.board-casino-open .board-atmosphere {
+    opacity: 1;
+    background:
+        radial-gradient(ellipse at 20% 22%, rgba(78, 255, 151, 0.10), transparent 23%),
+        radial-gradient(ellipse at 81% 20%, rgba(81, 223, 255, 0.13), transparent 24%),
+        radial-gradient(ellipse at 84% 67%, rgba(255, 91, 53, 0.14), transparent 24%),
+        radial-gradient(ellipse at 18% 70%, rgba(255, 92, 211, 0.27), transparent 28%),
+        radial-gradient(ellipse at 50% 44%, rgba(245, 199, 93, 0.09), transparent 18%);
+}
+
+.board-taku-casino .board-piece-taku {
+    right: auto;
+    left: 33.5%;
+    bottom: 27.5%;
+    filter:
+        drop-shadow(0 0 22px rgba(208, 106, 255, 0.70))
+        drop-shadow(0 18px 20px rgba(0, 0, 0, 0.76));
+    transform: rotate(-7deg) scale(1.06);
+}
+
+/* =========================================================
+   ПОСЛЕ КАЗИНО · ОБЕ ФИГУРКИ У ЦЕНТРА
+   ========================================================= */
+
+.board-casino-complete .node-casino {
+    border-color: rgba(119, 239, 151, 0.72);
+    box-shadow:
+        0 0 34px rgba(99, 234, 137, 0.22),
+        inset 0 0 24px rgba(100, 230, 136, 0.10);
+}
+
+.board-casino-complete .node-casino .world-node-status {
+    color: #8cf0a7;
+}
+
+.board-taku-center .board-piece-taku {
+    right: 46.5%;
+    left: auto;
+    bottom: 32.8%;
+    z-index: 11;
+    filter:
+        drop-shadow(0 0 26px rgba(197, 113, 255, 0.85))
+        drop-shadow(0 20px 22px rgba(0, 0, 0, 0.82));
+    transform: rotate(2deg) scale(1.12);
+}
+
+.board-center-pressure-taku {
+    left: 53.5%;
+    border-color: rgba(194, 116, 255, 0.75);
+    background:
+        radial-gradient(ellipse, rgba(202, 118, 255, 0.20), rgba(85, 39, 112, 0.10) 46%, transparent 70%);
+    box-shadow:
+        0 0 26px rgba(189, 103, 255, 0.48),
+        inset 0 0 20px rgba(205, 134, 255, 0.20);
+}
+
+.board-center-pressure-taku::before {
+    border-color: rgba(211, 147, 255, 0.52);
+}
+
+.board-center-pressure-taku::after {
+    background: rgba(193, 111, 255, 0.13);
+    box-shadow: 0 0 14px rgba(194, 115, 255, 0.62);
+}
+
+.board-center-pressure-taku span {
+    background: #e5b9ff;
+    box-shadow: 0 0 12px #c87cff;
+}
+
+.board-four-seals .board-center-pressure-taku {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    animation: board-center-taku-pulse 1.7s ease-in-out infinite alternate;
+}
+
+@keyframes board-center-taku-pulse {
+    from {
+        filter: brightness(0.95);
+        box-shadow: 0 0 20px rgba(189, 103, 255, 0.34), inset 0 0 16px rgba(205, 134, 255, 0.16);
+    }
+    to {
+        filter: brightness(1.18);
+        box-shadow: 0 0 38px rgba(189, 103, 255, 0.66), inset 0 0 26px rgba(205, 134, 255, 0.28);
+    }
+}
+
+.board-home-path {
+    position: absolute;
+    top: 34%;
+    left: 50%;
+    z-index: 15;
+    width: clamp(200px, 21vw, 330px);
+    aspect-ratio: 1.7;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.55);
+    transition: opacity 520ms ease, transform 620ms cubic-bezier(0.2, 0.9, 0.2, 1.15), filter 300ms ease;
+    pointer-events: none;
+}
+
+.board-home-path i {
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(255, 224, 139, 0.62);
+    border-radius: 50%;
+    box-shadow: 0 0 28px rgba(255, 215, 106, 0.36), inset 0 0 28px rgba(188, 108, 255, 0.14);
+}
+
+.board-home-path i:nth-child(2) {
+    inset: 12%;
+    border-color: rgba(201, 126, 255, 0.65);
+    transform: rotate(17deg);
+}
+
+.board-home-path i:nth-child(3) {
+    inset: 24%;
+    border-color: rgba(114, 236, 255, 0.62);
+    transform: rotate(-15deg);
+}
+
+.board-home-path span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: #fff1bd;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.13em;
+    transform: translate(-50%, -50%);
+}
+
+.board-home-path-open .board-home-path {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    animation: board-home-path-spin 5s linear infinite;
+}
+
+@keyframes board-home-path-spin {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.35) drop-shadow(0 0 14px rgba(255, 223, 128, .5)); }
+    100% { filter: brightness(1); }
+}
+
+.board-host-reveal {
+    position: absolute;
+    right: 2.5%;
+    bottom: 0;
+    z-index: 22;
+    width: clamp(230px, 25vw, 420px);
+    max-height: 76vh;
+    object-fit: contain;
+    opacity: 0;
+    filter: drop-shadow(0 24px 30px rgba(0, 0, 0, .85));
+    transform: translate(16%, 10%) scale(.84);
+    transition: opacity 620ms ease, transform 720ms cubic-bezier(.2,.8,.2,1), filter 350ms ease;
+    pointer-events: none;
+}
+
+.board-host-blocks .board-host-reveal {
+    opacity: 1;
+    filter: drop-shadow(0 24px 30px rgba(0, 0, 0, .85)) drop-shadow(0 0 22px rgba(245, 199, 93, .28));
+    transform: translate(0, 0) scale(1);
+}
+
+.board-host-blocks .board-home-path {
+    opacity: .18;
+    filter: saturate(.35) brightness(.55);
+    transform: translate(-50%, -50%) scale(.82);
+}
+
+.board-final-message {
+    position: absolute;
+    top: 57%;
+    left: 50%;
+    z-index: 24;
+    display: grid;
+    width: min(520px, 45vw);
+    padding: 13px 18px 15px;
+    border: 1px solid rgba(245, 199, 93, .36);
+    border-radius: 16px;
+    background: rgba(6, 5, 9, .84);
+    box-shadow: 0 18px 44px rgba(0,0,0,.55);
+    opacity: 0;
+    text-align: center;
+    transform: translate(-50%, 14px);
+    transition: opacity .45s ease .3s, transform .45s ease .3s;
+    backdrop-filter: blur(8px);
+}
+
+.board-four-seals .board-final-message {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.board-final-message span,
+.board-final-message small {
+    color: #cdbdd7;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .11em;
+}
+
+.board-final-message strong {
+    margin: 5px 0 4px;
+    color: #fff0bd;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(20px, 1.8vw, 30px);
+    font-weight: 500;
+}
+
+.board-after-casino-screen .board-caption {
+    width: min(650px, 50vw);
+}
+
+@media (max-width: 980px) {
+    .board-taku-casino .board-piece-taku { left: 31%; }
+    .board-host-reveal { width: min(34vw, 360px); }
+    .board-final-message { width: min(600px, 64vw); }
+}
+
+/* =========================================================
+   BOARD AFTER CASINO · ENTRY TO THE CO-OP FINALE
+   ========================================================= */
+
+.board-final-message .board-final-start {
+    display: block;
+    width: min(330px, 88%);
+    margin: 13px auto 0;
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
+    pointer-events: none;
+    transition: opacity .3s ease, transform .3s ease, filter .2s ease;
+}
+
+.board-final-message .board-final-start.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.board-final-message .board-final-start[hidden] {
+    display: none !important;
+}
+
+.board-piece.is-speaking {
+    animation: boardPieceSpeaking 180ms ease-in-out infinite alternate;
+}
+
+@keyframes boardPieceSpeaking {
+    from {
+        margin-left: -4px;
+        margin-top: -2px;
+        filter:
+            brightness(1.05)
+            drop-shadow(0 0 15px rgba(255, 225, 120, 0.55))
+            drop-shadow(0 18px 20px rgba(0, 0, 0, 0.76));
+    }
+
+    to {
+        margin-left: 4px;
+        margin-top: 2px;
+        filter:
+            brightness(1.18)
+            drop-shadow(0 0 25px rgba(255, 225, 120, 0.9))
+            drop-shadow(0 18px 20px rgba(0, 0, 0, 0.76));
+    }
+}
+
+.board-die-image {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+
+    margin-bottom: 24px;
+    cursor: pointer;
+}
+
+.board-die-image.is-rolling {
+    animation: diceRoll 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes diceRoll {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+
+    15% {
+        transform: translateY(-25px) rotate(70deg) scale(1.05);
+    }
+
+    35% {
+        transform: translateY(-45px) rotate(170deg) scale(1.08);
+    }
+
+    55% {
+        transform: translateY(-25px) rotate(260deg) scale(1.05);
+    }
+
+    75% {
+        transform: translateY(-8px) rotate(330deg) scale(1.02);
+    }
+
+    100% {
+        transform: translateY(0) rotate(360deg) scale(1);
+    }
+}
+
+.board-piece-go-tavern {
+    animation: tukoGoToTavern 5s ease-in-out forwards;
+}
+
+@keyframes tukoGoToTavern {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    70% {
+        transform: translate(var(--tuko-move-x-70), var(--tuko-move-y-70)) scale(0.85);
+    }
+    100% {
+        transform: translate(var(--tuko-move-x-100), var(--tuko-move-y-100)) scale(0.65);
+    }
+}
+
+.board-tuko-returned .board-piece-tuko {
+    transform:
+        translate(var(--tuko-return-x), var(--tuko-return-y))
+        scale(0.65);
+}
+
+.board-piece-go-spaceport {
+    animation: takuGoToSpaceport 5s ease-in-out forwards;
+}
+
+@keyframes takuGoToSpaceport {
+
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    70% {
+        transform: translate(var(--taku-move-x-70), var(--taku-move-y-70)) scale(0.85);
+    }
+
+    100% {
+        transform: translate(var(--taku-move-x-100), var(--taku-move-y-100)) scale(0.65);
+    }
+}
+
+.board-taku-spaceport-position .board-piece-taku {
+    transform:
+        translate(var(--taku-move-x-100), var(--taku-move-y-100))
+        scale(0.65);
+}
+
+/* Переход в Таверну */
+
+.tavern-entry-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+
+    background: rgba(0, 0, 0, 0);
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.7s ease,
+        background 0.9s ease;
+}
+
+.tavern-entry-overlay.is-dark {
+    opacity: 1;
+
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            transparent 0%,
+            transparent 8%,
+            rgba(0, 0, 0, 0.25) 12%,
+            rgba(0, 0, 0, 0.82) 24%,
+            rgba(0, 0, 0, 0.88) 100%
+        );
+}
+
+.tavern-entry-title {
+    position: absolute;
+    z-index: 51;
+    left: 23%;
+    top: 2%;
+
+    width: clamp(180px, 17vw, 260px);
+    min-height: 76px;
+    padding: 10px 15px 12px;
+
+    border: 1px solid #7bf2a1;
+    border-radius: 15px;
+
+    color: #7bf2a1;
+    background: rgba(5, 5, 12, 0.84);
+
+    box-shadow:
+        0 12px 34px rgba(0, 0, 0, 0.52),
+        0 0 22px rgba(89, 255, 153, 0.24);
+
+    backdrop-filter: blur(10px);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(19px, 1.6vw, 27px);
+    font-weight: 700;
+    line-height: 1.05;
+    text-align: center;
+
+    opacity: 0;
+    transform: translateY(9px) scale(0.96);
+
+    transition:
+        opacity 420ms ease,
+        transform 420ms ease,
+        box-shadow 300ms ease,
+        border-color 300ms ease;
+}
+
+.tavern-entry-overlay.is-title-visible .tavern-entry-title {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.board-handover {
+    position: absolute;
+    z-index: 30;
+    left: 50%;
+    top: 15%;
+    transform: translate(-50%, -50%);
+
+    width: min(560px, 78vw);
+    padding: 30px 42px 28px;
+
+    box-sizing: border-box;
+    text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(8, 12, 22, 0.96),
+            rgba(16, 18, 30, 0.93)
+        );
+
+    border: 1px solid rgba(216, 168, 62, 0.75);
+    border-radius: 12px;
+
+    box-shadow:
+        0 0 0 1px rgba(216, 168, 62, 0.10),
+        0 12px 45px rgba(0, 0, 0, 0.65),
+        inset 0 0 35px rgba(216, 168, 62, 0.045);
+
+    backdrop-filter: blur(8px);
+
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(15px);
+
+    transition:
+        opacity 0.5s ease,
+        transform 0.5s ease;
+}
+
+.board-handover.is-visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0);
+}
+
+.board-handover.is-hidden {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(-10px);
+}
+
+.board-handover-label {
+    margin-bottom: 10px;
+
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #d8a83e;
+}
+
+.board-handover-title {
+    margin-bottom: 18px;
+
+    font-size: clamp(22px, 2.5vw, 32px);
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #ffffff;
+
+    text-shadow:
+        0 0 12px rgba(255, 255, 255, 0.2);
+}
+
+.board-handover-player {
+    margin-bottom: 14px;
+
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    color: #d8a83e;
+}
+
+.board-handover-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.board-dice-result {
+    position: absolute;
+    z-index: 31;
+
+    left: 50%;
+    top: 20%;
+
+    width: min(600px, 80vw);
+    padding: 30px 40px;
+
+    box-sizing: border-box;
+    text-align: center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(8, 12, 22, 0.97),
+            rgba(16, 18, 30, 0.94)
+        );
+
+    border: 1px solid rgba(216, 168, 62, 0.8);
+    border-radius: 12px;
+
+    box-shadow:
+        0 0 0 1px rgba(216, 168, 62, 0.12),
+        0 15px 55px rgba(0, 0, 0, 0.7),
+        inset 0 0 40px rgba(216, 168, 62, 0.05);
+
+    backdrop-filter: blur(8px);
+
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(15px);
+
+    transition:
+        opacity 0.6s ease,
+        transform 0.6s ease;
+}
+
+.board-dice-result.is-visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0);
+}
+
+.board-dice-result-number {
+    margin-bottom: 14px;
+
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 600;
+    letter-spacing: 5px;
+    color: #ffffff;
+
+    text-shadow:
+        0 0 14px rgba(255, 255, 255, 0.25),
+        0 0 30px rgba(216, 168, 62, 0.18);
+}
+
+.board-dice-result-text {
+    font-size: clamp(14px, 1.5vw, 18px);
+    letter-spacing: 2px;
+    color: #d8a83e;
+}
+/* =========================
+   ПЕЧАТЬ РАВНОВЕСИЯ
+   ========================= */
+
+.board-seal {
+    position: absolute;
+    left: 40.2%;
+    top: 31%;
+    width: clamp(98px, 9vw, 160px);
+    height: auto;
+    object-fit: contain;
+
+    opacity: 0;
+    transform: translate(-50%, 24px) scale(0.55) rotate(-8deg);
+
+    z-index: 18;
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 0 10px rgba(255, 218, 110, 0.35))
+        drop-shadow(0 0 24px rgba(255, 194, 64, 0.22));
+
+    transition:
+        opacity 520ms ease,
+        transform 700ms cubic-bezier(.18, 1.15, .35, 1);
+}
+
+.board-seal-reveal .board-seal {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1) rotate(0deg);
+}
+
+/* =========================
+   ПИКСИ — УЛЕТАЕТ ПО КРУГУ
+   ========================= */
+
+.board-pixie-released .board-pixie-event {
+    animation:
+        board-pixie-fly-circle 1050ms
+        cubic-bezier(.25, .72, .3, 1)
+        forwards;
+    pointer-events: none;
+}
+
+@keyframes board-pixie-fly-circle {
+    0% {
+        opacity: 1;
+        transform:
+            translate(-50%, 0)
+            translate(0, 0)
+            scale(1)
+            rotate(-8deg);
+    }
+
+    18% {
+        opacity: 1;
+        transform:
+            translate(-50%, 0)
+            translate(34px, -34px)
+            scale(0.98)
+            rotate(32deg);
+    }
+
+    38% {
+        opacity: 1;
+        transform:
+            translate(-50%, 0)
+            translate(50px, 8px)
+            scale(0.92)
+            rotate(78deg);
+    }
+
+    58% {
+        opacity: 1;
+        transform:
+            translate(-50%, 0)
+            translate(8px, 50px)
+            scale(0.84)
+            rotate(145deg);
+    }
+
+    78% {
+        opacity: 0.9;
+        transform:
+            translate(-50%, 0)
+            translate(-42px, 12px)
+            scale(0.76)
+            rotate(220deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, 0)
+            translate(95px, -70px)
+            scale(0.45)
+            rotate(340deg);
+    }
+}
+/* =========================
+   ПЕЧАТЬ НАВИГАЦИИ
+   ========================= */
+
+.board-seal-navigation {
+    position: absolute;
+    right: 40.5%;
+    top: 32.5%;
+    width: clamp(92px, 9vw, 150px);
+    height: auto;
+    object-fit: contain;
+
+    opacity: 0;
+    transform: translate(50%, 24px) scale(0.55) rotate(8deg);
+
+    z-index: 18;
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 0 10px rgba(255, 218, 110, 0.35))
+        drop-shadow(0 0 24px rgba(255, 194, 64, 0.22));
+
+    transition:
+        opacity 520ms ease,
+        transform 700ms cubic-bezier(.18, 1.15, .35, 1);
+}
+
+.board-navigation-seal-reveal .board-seal-navigation {
+    opacity: 1;
+    transform: translate(50%, 0) scale(1) rotate(0deg);
+}
+.board-piece-go-arena {
+    animation: tukoGoToArena 5s ease-in-out forwards;
+}
+
+@keyframes tukoGoToArena {
+
+    0% {
+        transform:
+            translate(var(--tuko-return-x), var(--tuko-return-y))
+            scale(0.65);
+    }
+
+    60% {
+        transform:
+            translate(var(--tuko-arena-x-70), var(--tuko-arena-y-70))
+            scale(0.65);
+    }
+
+    70% {
+        transform:
+            translate(var(--tuko-arena-x-70), var(--tuko-arena-y-70))
+            scale(0.65);
+    }
+
+    100% {
+        transform:
+            translate(var(--tuko-arena-x-100), var(--tuko-arena-y-100))
+            scale(0.65);
+    }
+}
+
+/* =========================
+   ПЕЧАТЬ АРЕНЫ
+   ========================= */
+
+.board-seal-arena {
+    position: absolute;
+    right: 38.5%;
+    bottom: 44%;
+
+    width: clamp(120px, 12vw, 170px);
+    height: auto;
+    object-fit: contain;
+
+    opacity: 0;
+
+    transform:
+        translate(50%, -24px)
+        scale(0.55)
+        rotate(-8deg);
+
+    z-index: 18;
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 0 10px rgba(255, 218, 110, 0.35))
+        drop-shadow(0 0 24px rgba(255, 194, 64, 0.22));
+
+    transition:
+        opacity 520ms ease,
+        transform 700ms cubic-bezier(.18, 1.15, .35, 1);
+}
+
+.board-arena-seal-reveal .board-seal-arena {
+    opacity: 1;
+
+    transform:
+        translate(50%, 0)
+        scale(1)
+        rotate(0deg);
+}
+
+/* =========================
+   ТАКУ → КАЗИНО
+   ========================= */
+
+.board-piece-go-casino {
+    animation: takuGoToCasino 5s ease-in-out forwards;
+}
+
+@keyframes takuGoToCasino {
+
+    0% {
+        transform:
+            rotate(7deg)
+            scale(1.04);
+    }
+
+    60% {
+        transform:
+            translate(
+                var(--taku-casino-x-70),
+                var(--taku-casino-y-70)
+            )
+            scale(0.65);
+    }
+
+    70% {
+        transform:
+            translate(
+                var(--taku-casino-x-70),
+                var(--taku-casino-y-70)
+            )
+            scale(0.65);
+    }
+
+    100% {
+        transform:
+            translate(
+                var(--taku-casino-x-100),
+                var(--taku-casino-y-100)
+            )
+            scale(0.65);
+    }
+}
+/* =========================================================
+   ПЕРЕХОД В КАЗИНО
+   Затемнение всего стола кроме Казино
+   ========================================================= */
+
+.casino-entry-overlay {
+    position: absolute;
+    inset: 0;
+
+    z-index: 50;
+    pointer-events: none;
+
+    opacity: 0;
+
+    background:
+        rgba(0, 0, 0, 0);
+
+    transition:
+        opacity 0.7s ease,
+        background 0.9s ease;
+}
+
+.casino-entry-overlay.is-dark {
+    opacity: 1;
+
+    background:
+        radial-gradient(
+            circle at 17% 70%,
+
+            transparent 0%,
+            transparent 10%,
+
+            rgba(0, 0, 0, 0.20) 15%,
+            rgba(0, 0, 0, 0.48) 22%,
+            rgba(0, 0, 0, 0.72) 34%,
+
+            rgba(0, 0, 0, 0.86) 55%,
+            rgba(0, 0, 0, 0.92) 100%
+        );
+}
+
+/* =========================================================
+   ФИНАЛ · ТАКУ ВОЗВРАЩАЕТСЯ К ЦЕНТРУ
+   ========================================================= */
+
+/*
+ * Начальная позиция ТаКу:
+ * она ещё у Казино.
+ *
+ * Этот селектор специально более специфичный,
+ * чем .board-taku-center, чтобы можно было
+ * сделать красивое движение к Центру.
+ */
+
+.board-after-casino-screen.board-taku-arriving .board-piece-taku {
+    right: auto;
+    left: 33.5%;
+    bottom: 27.5%;
+
+    z-index: 11;
+
+    filter:
+        drop-shadow(0 0 22px rgba(208, 106, 255, 0.70))
+        drop-shadow(0 18px 20px rgba(0, 0, 0, 0.76));
+
+    transform:
+        rotate(-7deg)
+        scale(1.06);
+}
+
+
+/*
+ * Когда board-taku-arriving снимается,
+ * автоматически начинает работать
+ * существующий .board-taku-center.
+ *
+ * Поэтому ТаКу приезжает сюда:
+ *
+ * right: 46.5%
+ * bottom: 32.8%
+ */
+
+
+/* =========================================================
+   ПЕЧАТЬ ХИТРОСТИ · НИЖНЯЯ ЛЕВАЯ ПОЗИЦИЯ
+   ========================================================= */
+
+.board-seal-cunning {
+    position: absolute;
+
+    left: 38.5%;
+    bottom: 44%;
+
+    width: clamp(120px, 12vw, 170px);
+    height: auto;
+
+    object-fit: contain;
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, -24px)
+        scale(0.55)
+        rotate(8deg);
+
+    z-index: 18;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 0 10px rgba(255, 218, 110, 0.35))
+        drop-shadow(0 0 24px rgba(255, 194, 64, 0.22));
+
+    transition:
+        opacity 520ms ease,
+        transform 700ms cubic-bezier(.18, 1.15, .35, 1);
+}
+
+
+/*
+ * Появление Печати Хитрости.
+ */
+
+.board-cunning-seal-reveal .board-seal-cunning {
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0)
+        scale(1)
+        rotate(0deg);
+}
+
+
+/* =========================================================
+   ЛЕГКОЕ ОБЩЕЕ СВЕЧЕНИЕ ЧЕТЫРЁХ ПЕЧАТЕЙ
+   ========================================================= */
+
+.board-four-seals-lit .board-seal,
+.board-four-seals-lit .board-seal-navigation,
+.board-four-seals-lit .board-seal-arena,
+.board-four-seals-lit .board-seal-cunning {
+
+    filter:
+        brightness(1.18)
+        drop-shadow(0 0 14px rgba(255, 226, 133, 0.62))
+        drop-shadow(0 0 34px rgba(255, 196, 70, 0.32));
+}
+
+
+/* =========================================================
+   ЦЕНТРАЛЬНЫЙ ЗАКРЫТЫЙ ЗАМОК
+   ========================================================= */
+
+.board-central-lock {
+    position: absolute;
+
+    left: 50%;
+    top: 44%;
+
+    width: clamp(170px, 14vw, 245px);
+    height: auto;
+
+    z-index: 10;
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.72);
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 0 12px rgba(255, 215, 110, 0.20))
+        drop-shadow(0 0 32px rgba(255, 184, 55, 0.12));
+
+    transition:
+        opacity 650ms ease,
+        transform 800ms cubic-bezier(.18, 1.15, .35, 1),
+        filter 600ms ease;
+}
+
+
+.board-central-lock-image {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    object-fit: contain;
+}
+
+
+/*
+ * Замок проявляется только после активации
+ * четырёх печатей.
+ */
+
+.board-central-lock-visible .board-central-lock {
+    opacity: 1;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+
+    filter:
+        drop-shadow(0 0 18px rgba(255, 224, 132, 0.72))
+        drop-shadow(0 0 44px rgba(255, 187, 61, 0.36));
+}
+
+
+/* =========================================================
+   КРАСИВОЕ ФИНАЛЬНОЕ ПУЛЬСИРОВАНИЕ ЦЕНТРА
+   ========================================================= */
+
+.board-central-lock-visible .board-central-lock {
+    animation:
+        board-central-lock-pulse 2.4s ease-in-out infinite;
+}
+
+
+@keyframes board-central-lock-pulse {
+
+    0% {
+        filter:
+            drop-shadow(0 0 14px rgba(255, 224, 132, 0.48))
+            drop-shadow(0 0 30px rgba(255, 187, 61, 0.20));
+    }
+
+    50% {
+        filter:
+            drop-shadow(0 0 24px rgba(255, 230, 145, 0.84))
+            drop-shadow(0 0 52px rgba(255, 190, 62, 0.42));
+    }
+
+    100% {
+        filter:
+            drop-shadow(0 0 14px rgba(255, 224, 132, 0.48))
+            drop-shadow(0 0 30px rgba(255, 187, 61, 0.20));
+    }
+}
+
+
+/* =========================================================
+   КНОПКА ПОСЛЕ ПОЯВЛЕНИЯ ЗАМКА
+   ========================================================= */
+
+.board-after-casino-screen .board-caption .board-actions {
+    justify-content: center;
+}
+
+/* =========================================================
+   НОВЫЙ ФИНАЛ · ПЕРВЫЙ УЧАСТОК
+   ========================================================= */
+
+
+/* =========================================================
+   ТРИ ПРЕДЫДУЩИЕ ПЕЧАТИ
+   СРАЗУ В ФИНАЛЬНОМ РАЗМЕРЕ И ПОЗИЦИИ
+   ========================================================= */
+
+.board-previous-seals-static .board-seal {
+    opacity: 1 !important;
+
+    transform:
+        translate(-50%, 0)
+        scale(1)
+        rotate(0deg) !important;
+
+    transition: none !important;
+}
+
+
+.board-previous-seals-static .board-seal-navigation {
+    opacity: 1 !important;
+
+    transform:
+        translate(50%, 0)
+        scale(1)
+        rotate(0deg) !important;
+
+    transition: none !important;
+}
+
+
+.board-previous-seals-static .board-seal-arena {
+    opacity: 1 !important;
+
+    transform:
+        translate(50%, 0)
+        scale(1)
+        rotate(0deg) !important;
+
+    transition: none !important;
+}
+
+
+/* =========================================================
+   2. ТАКУ ПОКА СТОИТ У КАЗИНО
+   ========================================================= */
+
+.board-after-casino-screen.board-taku-still-at-casino
+.board-piece-taku {
+
+    left: 33.5%;
+    right: auto;
+
+    bottom: 27.5%;
+
+    z-index: 11;
+
+    transform:
+        rotate(-7deg)
+        scale(1.06);
+}
+
+
+/* =========================================================
+   3. НОВАЯ ФИНАЛЬНАЯ ПОЗИЦИЯ ФИГУРОК
+   =========================================================
+/* =========================================================
+   ФИНАЛЬНАЯ КОМПОЗИЦИЯ ФИГУРОК
+   ТуКо — слева
+   ТаКу — справа
+   ========================================================= */
+
+.board-after-casino-screen .board-piece-tuko {
+
+    left: 43%;
+    bottom: 35%;
+
+    right: auto;
+
+    z-index: 12;
+
+    transform:
+        rotate(-4deg)
+        scale(1.04);
+
+    filter:
+        drop-shadow(0 0 24px rgba(101, 244, 145, 0.72))
+        drop-shadow(0 20px 22px rgba(0, 0, 0, 0.82));
+}
+
+
+/*
+ * ТаКу пока находится у Казино.
+ */
+
+.board-after-casino-screen.board-taku-still-at-casino
+.board-piece-taku {
+
+    left: 33.5%;
+    right: auto;
+    bottom: 27.5%;
+
+    z-index: 11;
+
+    transform:
+        rotate(-7deg)
+        scale(1.06);
+}
+
+
+/*
+ * После выхода из Казино —
+ * ТаКу переходит на ПРАВУЮ сторону Центра.
+ */
+
+.board-after-casino-screen.board-taku-going-center
+.board-piece-taku {
+
+    left: 50%;
+    right: auto;
+    bottom: 35%;
+
+    z-index: 12;
+
+    transform:
+        rotate(3deg)
+        scale(1.04);
+
+    filter:
+        drop-shadow(0 0 24px rgba(197, 113, 255, 0.76))
+        drop-shadow(0 20px 22px rgba(0, 0, 0, 0.82));
+}
+
+
+/*
+ * Анимация движения ТаКу.
+ */
+
+.board-after-casino-screen .board-piece-taku {
+
+    transition:
+        left 3000ms cubic-bezier(.18, .82, .24, 1),
+        bottom 3000ms cubic-bezier(.18, .82, .24, 1),
+        transform 3000ms cubic-bezier(.18, .82, .24, 1),
+        filter 700ms ease;
+}
+
+
+/*
+ * ТаКу
+ */
+
+.board-after-casino-screen.board-taku-going-center
+.board-piece-taku,
+.board-after-casino-screen:not(.board-taku-still-at-casino)
+.board-piece-taku {
+
+    left: 52%;
+
+    right: auto;
+
+    bottom: 35%;
+
+    z-index: 12;
+
+    transform:
+        rotate(3deg)
+        scale(1.04);
+
+    filter:
+        drop-shadow(0 0 24px rgba(197, 113, 255, 0.76))
+        drop-shadow(0 20px 22px rgba(0, 0, 0, 0.82));
+}
+
+
+/*
+ * Сам переход.
+ */
+
+.board-after-casino-screen .board-piece-taku {
+
+    transition:
+        left 3000ms cubic-bezier(.18, .82, .24, 1),
+        bottom 3000ms cubic-bezier(.18, .82, .24, 1),
+        transform 3000ms cubic-bezier(.18, .82, .24, 1),
+        filter 700ms ease;
+}
+
+
+/* =========================================================
+   4. ПЕЧАТЬ ХИТРОСТИ
+   ========================================================= */
+
+.board-seal-cunning {
+
+    position: absolute;
+
+    left: 38.5%;
+    bottom: 44%;
+
+    width: clamp(120px, 12vw, 170px);
+
+    height: auto;
+
+    object-fit: contain;
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, -24px)
+        scale(.55)
+        rotate(8deg);
+
+    z-index: 18;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 0 10px rgba(255, 218, 110, .35))
+        drop-shadow(0 0 24px rgba(255, 194, 64, .22));
+
+    transition:
+        opacity 700ms ease,
+        transform 1100ms cubic-bezier(.18, 1.15, .35, 1);
+}
+
+
+.board-cunning-seal-reveal .board-seal-cunning {
+
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0)
+        scale(1)
+        rotate(0deg);
+}
+
+
+/* =========================================================
+   5. ЦЕНТРАЛЬНЫЙ ЗАМОК
+   ========================================================= */
+
+.board-central-lock {
+
+    position: absolute;
+
+    left: 50%;
+    top: 43%;
+
+    width: clamp(200px, 17vw, 290px);
+
+    z-index: 13;
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.55);
+
+    pointer-events: none;
+
+    filter:
+        brightness(.78)
+        drop-shadow(0 0 0 rgba(255, 222, 129, 0))
+        drop-shadow(0 0 0 rgba(255, 185, 51, 0));
+
+    transition:
+        opacity 700ms ease,
+        transform 1100ms cubic-bezier(.16, .9, .22, 1),
+        filter 900ms ease;
+}
+
+
+.board-central-lock-image {
+
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    object-fit: contain;
+}
+
+/* =========================================================
+   ЦЕНТРАЛЬНЫЙ ЗАМОК · АНИМАЦИЯ СИНХРОННА СО ЗВУКОМ
+   Длительность аудио: 4.219 сек
+   ========================================================= */
+
+.board-central-lock-awakening .board-central-lock {
+
+    opacity: 1;
+
+    animation:
+        centralLockAwaken 4219ms ease-out forwards;
+}
+
+
+@keyframes centralLockAwaken {
+
+    /*
+     * 0.00 сек
+     *
+     * Замок ещё скрыт.
+     */
+    0% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.50);
+
+        filter:
+            brightness(.65)
+            drop-shadow(
+                0 0 0 rgba(255, 230, 145, 0)
+            )
+            drop-shadow(
+                0 0 0 rgba(255, 190, 66, 0)
+            );
+    }
+
+
+    /*
+     * ~0.7 сек
+     *
+     * Начинает проявляться магия.
+     */
+    17% {
+
+        opacity: .85;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.82);
+
+        filter:
+            brightness(.95)
+            drop-shadow(
+                0 0 12px rgba(255, 225, 132, .45)
+            )
+            drop-shadow(
+                0 0 28px rgba(255, 185, 58, .22)
+            );
+    }
+
+
+    /*
+     * ~1.4 сек
+     *
+     * Основной всплеск.
+     */
+    33% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.05);
+
+        filter:
+            brightness(1.28)
+            drop-shadow(
+                0 0 28px rgba(255, 238, 166, .90)
+            )
+            drop-shadow(
+                0 0 62px rgba(255, 194, 65, .58)
+            );
+    }
+
+
+    /*
+     * ~2.3 сек
+     *
+     * Замок стабилизируется.
+     */
+    55% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(.98);
+
+        filter:
+            brightness(1.14)
+            drop-shadow(
+                0 0 22px rgba(255, 230, 145, .78)
+            )
+            drop-shadow(
+                0 0 48px rgba(255, 190, 66, .42)
+            );
+    }
+
+
+    /*
+     * ~3.3 сек
+     *
+     * Второй мягкий импульс.
+     */
+    78% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.015);
+
+        filter:
+            brightness(1.20)
+            drop-shadow(
+                0 0 25px rgba(255, 233, 154, .84)
+            )
+            drop-shadow(
+                0 0 54px rgba(255, 192, 61, .46)
+            );
+    }
+
+
+    /*
+     * 4.219 сек
+     *
+     * Звук заканчивается → визуал тоже приходит
+     * в готовое состояние.
+     */
+    100% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+
+        filter:
+            brightness(1.08)
+            drop-shadow(
+                0 0 18px rgba(255, 226, 132, .68)
+            )
+            drop-shadow(
+                0 0 38px rgba(255, 188, 60, .34)
+            );
+    }
+}
+
+
+/* =========================================================
+   7. УБИРАЕМ СТАРЫЕ ФИНАЛЬНЫЕ ЭЛЕМЕНТЫ
+   =========================================================
+ *
+ * Старые зелёные/фиолетовые плиты и надписи из
+ * прежнего board_after_casino больше не нужны.
+ */
+
+.board-after-casino-screen .board-center-pressure,
+.board-after-casino-screen .board-home-path,
+.board-after-casino-screen .board-final-message,
+.board-after-casino-screen .board-host-reveal {
+
+    display: none !important;
+}
+
+
+/* =========================================================
+   8. НА МАЛЕНЬКОМ ЭКРАНЕ
+   ========================================================= */
+
+@media (max-width: 980px) {
+
+    .board-after-casino-screen .board-piece-tuko {
+        left: 41%;
+        bottom: 27%;
+    }
+
+    .board-after-casino-screen.board-taku-going-center
+    .board-piece-taku,
+    .board-after-casino-screen:not(.board-taku-still-at-casino)
+    .board-piece-taku {
+        left: 59%;
+        bottom: 27%;
+    }
+
+    .board-after-casino-screen.board-taku-still-at-casino
+    .board-piece-taku {
+        left: 31%;
+        bottom: 27.5%;
+    }
+
+    .board-central-lock {
+        width: clamp(160px, 20vw, 220px);
+    }
+}
+
+/* =========================================================
+   BOARD AFTER CASINO — ФИНАЛЬНЫЙ ФОН
+   ========================================================= */
+
+.board-after-casino-screen {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(2, 2, 6, 0.32),
+            transparent 23%,
+            transparent 72%,
+            rgba(2, 2, 6, 0.58)
+        ),
+        url("../assets/images/final_table_bg.png")
+        center calc(50% - 12px) / cover no-repeat;
+}

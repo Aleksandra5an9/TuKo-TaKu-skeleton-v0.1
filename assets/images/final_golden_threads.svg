@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1672 941"
+     width="1672"
+     height="941"
+     fill="none"
+     preserveAspectRatio="none">
+
+  <defs>
+    <!-- Warm antique-gold metallic color -->
+    <linearGradient id="threadGold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#8A4A08"/>
+      <stop offset="18%"  stop-color="#C98216"/>
+      <stop offset="42%"  stop-color="#FFD86A"/>
+      <stop offset="50%"  stop-color="#FFF3B0"/>
+      <stop offset="58%"  stop-color="#FFD45E"/>
+      <stop offset="84%"  stop-color="#C87912"/>
+      <stop offset="100%" stop-color="#774007"/>
+    </linearGradient>
+
+    <filter id="threadGlow"
+            x="-25%" y="-250%" width="150%" height="600%">
+      <feGaussianBlur stdDeviation="5.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="threadWideGlow"
+            x="-30%" y="-400%" width="160%" height="900%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+
+    <!--
+      EXACTLY SIX THREADS:
+      LEFT HAND:
+        1 = Tavern
+        2 = Casino
+        3 = Die
+      RIGHT HAND:
+        4 = Spaceport
+        5 = Arena
+        6 = Die
+
+      Coordinates are designed for the supplied 1672x941 scene.
+      The SVG is transparent and is intended to be placed directly
+      above the background at the same 16:9 size.
+    -->
+
+    <!-- LEFT HAND -> TAVERN -->
+    <path id="thread-left-tavern"
+          d="M 759 145
+             C 700 151, 633 179, 560 204
+             C 530 214, 502 223, 474 230"/>
+
+    <!-- LEFT HAND -> CASINO -->
+    <path id="thread-left-casino"
+          d="M 759 148
+             C 670 213, 565 299, 449 381
+             C 388 424, 329 469, 281 509"/>
+
+    <!-- LEFT HAND -> DIE -->
+    <path id="thread-left-die"
+          d="M 766 149
+             C 782 193, 795 241, 806 276
+             C 811 290, 817 302, 824 313"/>
+
+    <!-- RIGHT HAND -> SPACEPORT -->
+    <path id="thread-right-spaceport"
+          d="M 912 146
+             C 975 147, 1039 154, 1098 165
+             C 1119 169, 1137 176, 1154 184"/>
+
+    <!-- RIGHT HAND -> ARENA -->
+    <path id="thread-right-arena"
+          d="M 911 150
+             C 1010 222, 1116 308, 1234 390
+             C 1290 430, 1354 472, 1411 510"/>
+
+    <!-- RIGHT HAND -> DIE -->
+    <path id="thread-right-die"
+          d="M 904 149
+             C 887 195, 874 241, 861 276
+             C 855 291, 849 302, 842 313"/>
+
+  </defs>
+
+  <!-- Wide soft magical aura -->
+  <g class="golden-threads-glow" pointer-events="none">
+    <use href="#thread-left-tavern"
+          class="golden-thread golden-thread-left-tavern"
+          stroke="#F8B92F" stroke-width="15" stroke-linecap="round"
+          opacity=".20" filter="url(#threadWideGlow)"/>
+    <use href="#thread-left-casino"
+          class="golden-thread golden-thread-left-casino"
+          stroke="#F8B92F" stroke-width="15" stroke-linecap="round"
+          opacity=".20" filter="url(#threadWideGlow)"/>
+    <use href="#thread-left-die"
+          class="golden-thread golden-thread-left-die"
+          stroke="#F8B92F" stroke-width="15" stroke-linecap="round"
+          opacity=".20" filter="url(#threadWideGlow)"/>
+
+    <use href="#thread-right-spaceport"
+          class="golden-thread golden-thread-right-spaceport"
+          stroke="#F8B92F" stroke-width="15" stroke-linecap="round"
+          opacity=".20" filter="url(#threadWideGlow)"/>
+    <use href="#thread-right-arena"
+          class="golden-thread golden-thread-right-arena"
+          stroke="#F8B92F" stroke-width="15" stroke-linecap="round"
+          opacity=".20" filter="url(#threadWideGlow)"/>
+    <use href="#thread-right-die"
+          class="golden-thread golden-thread-right-die"
+          stroke="#F8B92F" stroke-width="15" stroke-linecap="round"
+          opacity=".20" filter="url(#threadWideGlow)"/>
+  </g>
+
+  <!-- Main gold filament -->
+  <g class="golden-threads-body" pointer-events="none">
+    <use href="#thread-left-tavern"
+          class="golden-thread golden-thread-left-tavern"
+          stroke="url(#threadGold)" stroke-width="4.6" stroke-linecap="round"
+          filter="url(#threadGlow)"/>
+    <use href="#thread-left-casino"
+          class="golden-thread golden-thread-left-casino"
+          stroke="url(#threadGold)" stroke-width="4.6" stroke-linecap="round"
+          filter="url(#threadGlow)"/>
+    <use href="#thread-left-die"
+          class="golden-thread golden-thread-left-die"
+          stroke="url(#threadGold)" stroke-width="4.6" stroke-linecap="round"
+          filter="url(#threadGlow)"/>
+
+    <use href="#thread-right-spaceport"
+          class="golden-thread golden-thread-right-spaceport"
+          stroke="url(#threadGold)" stroke-width="4.6" stroke-linecap="round"
+          filter="url(#threadGlow)"/>
+    <use href="#thread-right-arena"
+          class="golden-thread golden-thread-right-arena"
+          stroke="url(#threadGold)" stroke-width="4.6" stroke-linecap="round"
+          filter="url(#threadGlow)"/>
+    <use href="#thread-right-die"
+          class="golden-thread golden-thread-right-die"
+          stroke="url(#threadGold)" stroke-width="4.6" stroke-linecap="round"
+          filter="url(#threadGlow)"/>
+  </g>
+
+  <!-- Fine luminous center -->
+  <g class="golden-threads-core" pointer-events="none">
+    <use href="#thread-left-tavern"
+          class="golden-thread golden-thread-left-tavern"
+          stroke="#FFF8DA" stroke-width="1.35" stroke-linecap="round"
+          opacity=".98"/>
+    <use href="#thread-left-casino"
+          class="golden-thread golden-thread-left-casino"
+          stroke="#FFF8DA" stroke-width="1.35" stroke-linecap="round"
+          opacity=".98"/>
+    <use href="#thread-left-die"
+          class="golden-thread golden-thread-left-die"
+          stroke="#FFF8DA" stroke-width="1.35" stroke-linecap="round"
+          opacity=".98"/>
+
+    <use href="#thread-right-spaceport"
+          class="golden-thread golden-thread-right-spaceport"
+          stroke="#FFF8DA" stroke-width="1.35" stroke-linecap="round"
+          opacity=".98"/>
+    <use href="#thread-right-arena"
+          class="golden-thread golden-thread-right-arena"
+          stroke="#FFF8DA" stroke-width="1.35" stroke-linecap="round"
+          opacity=".98"/>
+    <use href="#thread-right-die"
+          class="golden-thread golden-thread-right-die"
+          stroke="#FFF8DA" stroke-width="1.35" stroke-linecap="round"
+          opacity=".98"/>
+  </g>
+
+  <!-- Tiny magical glints, deliberately subtle -->
+  <g class="golden-thread-sparks" fill="#FFF1AC" pointer-events="none">
+    <circle cx="585" cy="195" r="2"/>
+    <circle cx="372" cy="438" r="1.8"/>
+    <circle cx="792" cy="232" r="1.9"/>
+    <circle cx="1015" cy="153" r="1.9"/>
+    <circle cx="1197" cy="365" r="1.8"/>
+    <circle cx="880" cy="232" r="1.9"/>
+  </g>
+</svg>

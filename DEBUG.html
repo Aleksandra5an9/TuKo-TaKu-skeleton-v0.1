@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DEBUG · ТуКо и ТаКу</title>
+    <style>
+        :root { color-scheme: dark; font-family: "Segoe UI", Arial, sans-serif; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 32px;
+            color: #fff9e9;
+            background: #090713;
+        }
+        main { width: min(1180px, 100%); margin: 0 auto; }
+        h1 { margin: 0 0 8px; font-family: Georgia, serif; font-size: clamp(36px, 5vw, 68px); }
+        .lead { margin: 0 0 30px; color: #c6bfd3; line-height: 1.55; }
+        .group { margin: 28px 0; }
+        .group h2 { margin: 0 0 12px; color: #f5c75d; font-size: 18px; letter-spacing: .08em; text-transform: uppercase; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+        a {
+            display: block;
+            min-height: 82px;
+            padding: 15px 17px;
+            border: 1px solid rgba(245,199,93,.35);
+            border-radius: 14px;
+            color: #fff9e9;
+            background: #151126;
+            text-decoration: none;
+            transition: transform .15s ease, border-color .15s ease;
+        }
+        a:hover { transform: translateY(-2px); border-color: #f5c75d; }
+        a strong { display:block; margin-bottom: 5px; color:#fff1bd; }
+        a code { color:#6ef4ff; font-size:12px; }
+        .note {
+            margin-top: 28px;
+            padding: 16px 18px;
+            border: 1px solid rgba(110,244,255,.22);
+            border-radius: 14px;
+            color: #c6bfd3;
+            background: rgba(21,17,38,.7);
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>DEBUG · ТуКо и ТаКу</h1>
+    <p class="lead">Прямой запуск текущих сцен. DEBUG не меняет обычный игровой маршрут и не записывает тестовый checkpoint.</p>
+
+    <section class="group">
+        <h2>Общее</h2>
+        <div class="grid">
+            <a href="index.html"><strong>Главное меню</strong><code>menu</code></a>
+            <a href="index.html?scene=board_intro&preset=fresh"><strong>Центральный стол</strong><code>board_intro</code></a>
+        </div>
+    </section>
+
+    <section class="group">
+        <h2>Пролог</h2>
+        <div class="grid">
+            <a href="index.html?scene=prologue_title&preset=fresh"><strong>Пролог · начало</strong><code>prologue_title</code></a>
+            <a href="index.html?scene=prologue_scan&preset=fresh"><strong>Проверка игроков</strong><code>prologue_scan</code></a>
+            <a href="index.html?scene=prologue_storage&preset=fresh"><strong>Стич узнаёт сестёр</strong><code>prologue_storage</code></a>
+        </div>
+    </section>
+
+    <section class="group">
+        <h2>ТуКо · Таверна</h2>
+        <div class="grid">
+            <a href="index.html?scene=handover_tuko_1&preset=fresh"><strong>Передача хода ТуКо</strong><code>handover_tuko_1</code></a>
+            <a href="index.html?scene=board_roll_tavern&preset=fresh"><strong>Бросок в Таверну</strong><code>board_roll_tavern</code></a>
+            <a href="index.html?scene=tavern_arrival&preset=after_tuko_roll"><strong>Вход в Таверну</strong><code>tavern_arrival</code></a>
+            <a href="index.html?scene=tavern_intro&preset=after_tuko_roll"><strong>Разговор с Грошем</strong><code>tavern_intro</code></a>
+            <a href="index.html?scene=tavern_orders&preset=after_tuko_roll"><strong>Задание 1 · Заказы</strong><code>tavern_orders</code></a>
+            <a href="index.html?scene=tavern_smoke&preset=tavern_task1_done"><strong>Задание 2 · Звёздная вязь</strong><code>tavern_smoke</code></a>
+            <a href="index.html?scene=tavern_balance&preset=tavern_task2_done"><strong>Задание 3 · Баланс миров</strong><code>tavern_balance</code></a>
+            <a href="index.html?scene=board_after_tavern&preset=tavern_done"><strong>Поле после Таверны</strong><code>board_after_tavern</code></a>
+        </div>
+    </section>
+
+    <section class="group">
+        <h2>ТаКу · Космопорт</h2>
+        <div class="grid">
+            <a href="index.html?scene=handover_taku_1&preset=tavern_done"><strong>Передача хода ТаКу</strong><code>handover_taku_1</code></a>
+            <a href="index.html?scene=board_roll_spaceport&preset=tavern_done"><strong>Бросок в Космопорт</strong><code>board_roll_spaceport</code></a>
+            <a href="index.html?scene=spaceport_intro&preset=spaceport_open"><strong>Вход в Космопорт</strong><code>spaceport_intro</code></a>
+            <a href="index.html?scene=spaceport_core&preset=spaceport_open"><strong>Задание 1 · Ядро</strong><code>spaceport_core</code></a>
+            <a href="index.html?scene=spaceport_route&preset=spaceport_core_done"><strong>Задание 2 · Маршрут</strong><code>spaceport_route</code></a>
+            <a href="index.html?scene=spaceport_energy&preset=spaceport_route_done"><strong>Задание 3 · Энергоконтур</strong><code>spaceport_energy</code></a>
+            <a href="index.html?scene=spaceport_clue&preset=spaceport_done"><strong>Улика · Журнал кости</strong><code>spaceport_clue</code></a>
+            <a href="index.html?scene=spaceport_outro&preset=spaceport_done"><strong>Финал Космопорта · Печать</strong><code>spaceport_outro</code></a>
+            <a href="index.html?scene=board_after_spaceport&preset=spaceport_done"><strong>Поле после Космопорта</strong><code>board_after_spaceport</code></a>
+        </div>
+    </section>
+
+    <section class="group">
+        <h2>ТуКо · Древняя арена</h2>
+        <div class="grid">
+            <a href="index.html?scene=handover_tuko_2&preset=after_spaceport"><strong>Передача второго хода ТуКо</strong><code>handover_tuko_2</code></a>
+            <a href="index.html?scene=board_roll_arena&preset=after_spaceport"><strong>Бросок в Арену</strong><code>board_roll_arena</code></a>
+            <a href="index.html?scene=arena_intro&preset=arena_open"><strong>Вход на Арену</strong><code>arena_intro</code></a>
+            <a href="index.html?scene=arena_read&preset=arena_open"><strong>Задание 1 · Читай движение</strong><code>arena_read</code></a>
+            <a href="index.html?scene=arena_read&preset=arena_read_done"><strong>Задание 1 · Уже пройдено</strong><code>arena_read</code></a>
+            <a href="index.html?scene=arena_dance&preset=arena_read_done"><strong>Задание 2 · Танец на краю</strong><code>arena_dance</code></a>
+            <a href="index.html?scene=arena_dance&preset=arena_dance_done"><strong>Задание 2 · Уже пройдено</strong><code>arena_dance</code></a>
+            <a href="index.html?scene=arena_freedom_seal&preset=arena_dance_done"><strong>Задание 3 · Печать освобождения</strong><code>arena_freedom_seal</code></a>
+            <a href="index.html?scene=arena_freedom_seal&preset=arena_done"><strong>Задание 3 · Уже пройдено</strong><code>arena_freedom_seal</code></a>
+            <a href="index.html?scene=arena_outro&preset=arena_done"><strong>Финал Арены · освобождение</strong><code>arena_outro</code></a>
+            <a href="index.html?scene=board_after_arena&preset=arena_done"><strong>Поле после Арены · ТуКо у центра</strong><code>board_after_arena</code></a>
+        </div>
+    </section>
+
+    <section class="group">
+        <h2>ТаКу · Магическое казино</h2>
+        <div class="grid">
+            <a href="index.html?scene=handover_taku_2&preset=arena_done"><strong>Передача последнего хода ТаКу</strong><code>handover_taku_2</code></a>
+            <a href="index.html?scene=board_roll_casino&preset=arena_done"><strong>Бросок в Казино</strong><code>board_roll_casino</code></a>
+            <a href="index.html?scene=casino_intro&preset=casino_open"><strong>Вход в Казино</strong><code>casino_intro</code></a>
+            <a href="index.html?scene=casino_plan&preset=casino_open"><strong>Задание 1 · Собрать план</strong><code>casino_plan</code></a>
+            <a href="index.html?scene=casino_pattern&preset=casino_plan_done"><strong>Задание 2 · Рулетка</strong><code>casino_pattern</code></a>
+            <a href="index.html?scene=casino_security&preset=casino_pattern_done"><strong>Задание 3 · Охранная сеть</strong><code>casino_security</code></a>
+            <a href="index.html?scene=casino_outro&preset=casino_done"><strong>Финал Казино · Печать Хитрости</strong><code>casino_outro</code></a>
+            <a href="index.html?scene=board_after_casino&preset=casino_done"><strong>Поле после Казино · обе у центра</strong><code>board_after_casino</code></a>
+        </div>
+    </section>
+
+    <section class="group">
+        <h2>Совместный финал · Настя + Рита</h2>
+        <div class="grid">
+            <a href="index.html?scene=finale_reveal&preset=finale_open"><strong>Ведущий · Последнее правило</strong><code>finale_reveal</code></a>
+            <a href="index.html?scene=finale_false_choice&preset=finale_open"><strong>Ложный выбор</strong><code>finale_false_choice</code></a>
+            <a href="index.html?scene=finale_controls&preset=finale_rule_broken"><strong>Управление вдвоём</strong><code>finale_controls</code></a>
+            <a href="index.html?scene=finale_bridge&preset=finale_rule_broken"><strong>Узел 1 · Плита и мост</strong><code>finale_bridge</code></a>
+            <a href="index.html?scene=finale_rotate&preset=finale_bridge_done"><strong>Узел 2 · Поворот пути</strong><code>finale_rotate</code></a>
+            <a href="index.html?scene=finale_die&preset=finale_rotate_done"><strong>Узел 3 · Кость против Ведущего</strong><code>finale_die</code></a>
+            <a href="index.html?scene=finale_confirm&preset=finale_die_done"><strong>Активировать вместе</strong><code>finale_confirm</code></a>
+            <a href="index.html?scene=finale_restore&preset=finale_confirm_done"><strong>Имена восстановлены</strong><code>finale_restore</code></a>
+        </div>
+    </section>
+
+    <div class="note">
+        Если добавляем новую сцену, просто добавляем ещё одну карточку сюда и при необходимости новый preset в <b>js/config.js</b>.
+        Обычным игрокам этот файл вообще не нужен — запускается только <b>index.html</b>.
+    </div>
+</main>
+</body>
+</html>

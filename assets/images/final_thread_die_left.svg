@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1672 941"
+     width="1672"
+     height="941"
+     fill="none"
+     preserveAspectRatio="none">
+
+  <defs>
+    <linearGradient id="threadGold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#8A4A08"/>
+      <stop offset="18%"  stop-color="#C98216"/>
+      <stop offset="42%"  stop-color="#FFD86A"/>
+      <stop offset="50%"  stop-color="#FFF3B0"/>
+      <stop offset="58%"  stop-color="#FFD45E"/>
+      <stop offset="84%"  stop-color="#C87912"/>
+      <stop offset="100%" stop-color="#774007"/>
+    </linearGradient>
+
+    <filter id="threadGlow"
+            x="-25%" y="-250%" width="150%" height="600%">
+      <feGaussianBlur stdDeviation="5.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="threadWideGlow"
+            x="-30%" y="-400%" width="160%" height="900%">
+      <feGaussianBlur stdDeviation="11" result="wideBlur"/>
+      <feMerge>
+        <feMergeNode in="wideBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <path id="thread-left-die" d="M 766 149 C 782 193, 795 241, 806 276 C 811 290, 817 302, 824 313"/>
+  </defs>
+
+  <!-- Wide soft magical aura -->
+  <g class="golden-threads-glow" pointer-events="none">
+    <use href="#thread-left-die"
+         stroke="#F8B92F" stroke-width="15" stroke-linecap="round"
+         opacity=".20" filter="url(#threadWideGlow)"/>
+  </g>
+
+  <!-- Main gold filament -->
+  <g class="golden-threads-body" pointer-events="none">
+    <use href="#thread-left-die"
+         stroke="url(#threadGold)" stroke-width="4.6" stroke-linecap="round"
+         filter="url(#threadGlow)"/>
+  </g>
+
+  <!-- Fine luminous center -->
+  <g class="golden-threads-core" pointer-events="none">
+    <use href="#thread-left-die"
+         stroke="#FFF8DA" stroke-width="1.35" stroke-linecap="round"
+         opacity=".98"/>
+  </g>
+</svg>

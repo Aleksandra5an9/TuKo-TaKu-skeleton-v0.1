@@ -1,0 +1,5862 @@
+/* =========================================================
+   МАГИЧЕСКОЕ КАЗИНО
+   Все координаты сцены собраны здесь, чтобы их было легко
+   подправить под финальные PNG без изменения JS.
+   ========================================================= */
+
+.casino-screen {
+    --casino-gold: #f3c65e;
+    --casino-gold-pale: #ffeab0;
+    --casino-violet: #aa63ff;
+    --casino-cyan: #6eeaff;
+    --casino-red: #ff5f68;
+    --casino-panel: rgba(8, 5, 13, 0.82);
+    color: #fff4dd;
+    overflow: hidden;
+    background: #08050b;
+}
+
+.casino-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.casino-background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    user-select: none;
+}
+
+.casino-screen::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        linear-gradient(to bottom, rgba(0,0,0,.15), transparent 18%, transparent 76%, rgba(0,0,0,.30)),
+        radial-gradient(circle at 50% 48%, transparent 42%, rgba(0,0,0,.17) 100%);
+    content: "";
+    pointer-events: none;
+}
+
+.casino-stage > *:not(.casino-background) {
+    z-index: 3;
+}
+
+.casino-scene-header {
+    position: absolute;
+
+    top: 2%;
+    left: 2.5%;
+
+    z-index: 15 !important;
+
+    width: min(390px, 27vw);
+
+    padding: 12px 18px 14px;
+
+    border: 1px solid rgba(239, 192, 87, .38);
+    border-left: 3px solid rgba(239, 192, 87, .85);
+
+    border-radius: 4px 12px 12px 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(9, 5, 13, .94),
+            rgba(9, 5, 13, .78)
+        );
+
+    box-shadow:
+        0 14px 35px rgba(0,0,0,.48),
+        0 0 22px rgba(160,82,255,.08);
+
+    text-align: left;
+
+    transform: none;
+
+    backdrop-filter: blur(8px);
+}
+
+.casino-scene-header p,
+.casino-scene-header span {
+    margin: 0;
+
+    color: #c9b7d8;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: .14em;
+
+    text-transform: uppercase;
+}
+
+.casino-scene-header p {
+    color: var(--casino-gold);
+
+    font-size: 9px;
+
+    letter-spacing: .18em;
+}
+
+.casino-scene-header h1 {
+    margin: 4px 0 7px;
+
+    color: var(--casino-gold-pale);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: clamp(20px, 1.8vw, 30px);
+
+    font-weight: 500;
+
+    line-height: 1.05;
+}
+
+.casino-scene-header span {
+    display: block;
+
+    max-width: 330px;
+
+    color: #b9afc2;
+
+    font-size: 9px;
+
+    line-height: 1.45;
+
+    letter-spacing: .07em;
+}
+
+.casino-dialogue {
+    position: absolute;
+    bottom: clamp(24px, 4vh, 46px);
+    left: 50%;
+    z-index: 25 !important;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 7px 18px;
+    width: min(760px, 72vw);
+    padding: 15px 18px;
+    border: 1px solid rgba(246, 201, 92, .48);
+    border-radius: 16px;
+    background: rgba(7, 4, 10, .88);
+    box-shadow: 0 22px 55px rgba(0,0,0,.62), 0 0 28px rgba(178,89,255,.10);
+    opacity: 0;
+    transform: translate(-50%, 18px);
+    transition: opacity .45s ease, transform .45s ease;
+    backdrop-filter: blur(9px);
+}
+
+.casino-ready .casino-dialogue {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.casino-dialogue-speaker {
+    grid-column: 1;
+    color: var(--casino-gold);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .13em;
+}
+
+.casino-dialogue-text {
+    grid-column: 1;
+    margin: 0;
+    color: #fff5e2;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(17px, 1.35vw, 23px);
+    line-height: 1.25;
+}
+
+.casino-dialogue .gold-button {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    min-width: 150px;
+}
+
+.casino-lady {
+    position: absolute;
+    z-index: 8 !important;
+    width: min(36vw, 610px);
+    max-height: 75vh;
+    object-fit: contain;
+    filter: drop-shadow(0 25px 28px rgba(0,0,0,.75)) drop-shadow(0 0 17px rgba(167,90,255,.20));
+    pointer-events: none;
+    transition: transform .35s ease, filter .35s ease;
+}
+
+.casino-lady-intro {
+    right: 7%;
+    bottom: 9%;
+}
+
+.casino-lady-outro {
+    right: 8%;
+    bottom: 8%;
+}
+
+.casino-lady.is-talking {
+    filter: drop-shadow(0 25px 30px rgba(0,0,0,.78)) drop-shadow(0 0 28px rgba(181,104,255,.40));
+    transform: translateY(-5px) scale(1.015);
+}
+
+/* =========================================================
+   ОБЩИЕ ЭЛЕМЕНТЫ ИНВЕНТАРЯ / ФИДБЭКА
+   ========================================================= */
+
+.casino-feedback {
+    position: absolute;
+    right: 2.2%;
+    bottom: 3.2%;
+    z-index: 24 !important;
+    width: min(420px, 32vw);
+    min-height: 54px;
+    padding: 10px 14px;
+    border: 1px solid rgba(189, 117, 255, .30);
+    border-radius: 13px;
+    color: #ece4f4;
+    background: rgba(8, 5, 13, .82);
+    box-shadow: 0 12px 30px rgba(0,0,0,.48);
+    font-size: 12px;
+    line-height: 1.35;
+    backdrop-filter: blur(8px);
+}
+
+.casino-inventory {
+    position: absolute;
+    left: 50%;
+    bottom: 1.7%;
+    z-index: 20 !important;
+    display: grid;
+    grid-template-columns: repeat(3, clamp(72px, 6.6vw, 108px));
+    gap: clamp(5px, .5vw, 10px);
+    transform: translateX(-50%);
+}
+
+.casino-inventory-slot {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    opacity: .16;
+    transform: scale(.82);
+    transition: opacity .35s ease, transform .35s ease, filter .35s ease;
+}
+
+.casino-inventory-slot.is-owned {
+    opacity: 1;
+    filter: drop-shadow(0 0 15px rgba(181,103,255,.58));
+    transform: scale(1);
+}
+
+.casino-inventory-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.casino-next-button {
+    position: absolute;
+    right: 3%;
+    bottom: 11%;
+    z-index: 30 !important;
+    animation: casino-next-pulse 1.25s ease-in-out infinite alternate;
+}
+
+@keyframes casino-next-pulse {
+    from { filter: brightness(.95); }
+    to { filter: brightness(1.16) drop-shadow(0 0 13px rgba(246,199,93,.34)); }
+}
+
+/* =========================================================
+   ИСПЫТАНИЕ 1 · СОБРАТЬ ПЛАН
+   ========================================================= */
+
+.casino-plan-screen {
+    --golem-left: 2.2%;
+    --golem-bottom: 8.2%;
+    --golem-width: min(32vw, 535px);
+}
+
+.casino-golem {
+    position: absolute;
+    left: var(--golem-left);
+    bottom: var(--golem-bottom);
+    width: var(--golem-width);
+    max-height: 70vh;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 22px rgba(0,0,0,.70));
+    transform: rotate(1deg);
+    transition: transform .38s ease, filter .38s ease;
+    pointer-events: none;
+}
+
+.casino-golem.is-awake {
+    filter: drop-shadow(0 20px 26px rgba(0,0,0,.75)) drop-shadow(0 0 18px rgba(154,81,255,.28));
+    transform: translate(1.5%, -1%) rotate(1deg) scale(1.015);
+}
+
+.casino-golem.is-distracted {
+    transform: translateX(-2%) rotate(-2deg);
+}
+
+.casino-plan-chip-prize,
+.casino-plan-lens-prize,
+.casino-plan-key-prize,
+.casino-living-card,
+.casino-plan-stitch {
+    position: absolute;
+    z-index: 10 !important;
+    object-fit: contain;
+}
+
+.casino-plan-chip-prize {
+    left: 22.7%;
+    bottom: 22%;
+    width: clamp(48px, 4.6vw, 78px);
+    filter: drop-shadow(0 0 12px rgba(255,213,102,.48));
+    transition: opacity .35s ease, transform .35s ease;
+    pointer-events: none;
+}
+
+.casino-plan-chip-prize.is-collected,
+.casino-plan-lens-prize.is-collected,
+.casino-plan-key-prize.is-collected {
+    opacity: 0;
+    transform: translateY(-22px) scale(.7);
+    pointer-events: none;
+}
+
+.casino-plan-lens-prize {
+    left: 15.5%;
+    top: 27%;
+    width: clamp(64px, 5.8vw, 100px);
+    opacity: 0;
+    cursor: pointer;
+    filter: drop-shadow(0 0 17px rgba(255,218,110,.55));
+    transform: scale(.65) rotate(-12deg);
+    transition: opacity .35s ease, transform .35s ease;
+    pointer-events: none;
+}
+
+.casino-plan-lens-prize.is-visible {
+    opacity: 1;
+    transform: scale(1) rotate(-12deg);
+    pointer-events: auto;
+}
+
+.casino-living-card {
+    right: 27%;
+    top: 42%;
+    width: clamp(65px, 5vw, 90px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.casino-living-card.is-flying {
+    opacity: 1;
+    animation: living-card-flight 1.25s cubic-bezier(.15,.7,.25,1) both;
+}
+
+@keyframes living-card-flight {
+    0% { transform: translate(0,0) rotate(-15deg) scale(.8); }
+    55% { transform: translate(-19vw,-17vh) rotate(35deg) scale(1.15); }
+    100% { transform: translate(-4vw,-7vh) rotate(118deg) scale(.9); opacity: .15; }
+}
+
+.casino-plan-stitch {
+    left: 57%;
+    bottom: 13%;
+    width: clamp(105px, 10vw, 170px);
+    opacity: 0;
+    filter: drop-shadow(0 15px 18px rgba(0,0,0,.62));
+    transform: translateX(20px);
+    transition: opacity .35s ease, transform .35s ease;
+    pointer-events: none;
+}
+
+.casino-plan-stitch.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.casino-plan-key-prize {
+    left: 63%;
+    bottom: 19%;
+    width: clamp(85px, 7.5vw, 130px);
+    opacity: 0;
+    cursor: pointer;
+    filter: drop-shadow(0 0 14px rgba(255,207,90,.55));
+    transform: rotate(-14deg) scale(.7);
+    transition: opacity .35s ease, transform .35s ease;
+    pointer-events: none;
+}
+
+.casino-plan-key-prize.is-visible {
+    opacity: 1;
+    transform: rotate(-14deg) scale(1);
+    pointer-events: auto;
+}
+
+.casino-hotspot {
+    position: absolute;
+    z-index: 14 !important;
+    display: block;
+    border: 1px solid transparent;
+    border-radius: 22px;
+    background: transparent;
+    color: transparent;
+    cursor: pointer;
+    transition: box-shadow .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.casino-hotspot:hover,
+.casino-hotspot:focus-visible {
+    outline: none;
+    border-color: rgba(246, 203, 102, .28);
+    background: rgba(246, 203, 102, .03);
+    box-shadow: 0 0 22px rgba(246,203,102,.17), inset 0 0 18px rgba(177,91,255,.08);
+}
+
+.hotspot-chip { left: 19%; bottom: 18%; width: 10%; height: 16%; }
+.hotspot-mirror { left: 4%; top: 14%; width: 22%; height: 35%; }
+.hotspot-machine { right: 1%; top: 20%; width: 17%; height: 41%; }
+.hotspot-dealer { left: 45%; top: 34%; width: 24%; height: 25%; }
+.hotspot-vault { left: 46%; top: 8%; width: 14%; height: 25%; }
+.hotspot-roulette { left: 27%; top: 18%; width: 20%; height: 24%; }
+.hotspot-hat { right: 8%; bottom: 13%; width: 16%; height: 20%; }
+
+.casino-machine-running .hotspot-machine {
+    box-shadow: 0 0 25px rgba(255,219,117,.25);
+}
+
+/* =========================================================
+   ИСПЫТАНИЕ 2 · РУЛЕТКА
+   ========================================================= */
+
+.roulette-results-panel,
+.roulette-log-panel {
+    position: absolute;
+    top: 22%;
+    z-index: 12 !important;
+    padding: 13px;
+    border: 1px solid rgba(178, 104, 255, .35);
+    border-radius: 15px;
+    background: rgba(8, 5, 13, .82);
+    box-shadow: 0 18px 42px rgba(0,0,0,.45), inset 0 0 25px rgba(138,76,213,.07);
+    backdrop-filter: blur(7px);
+}
+
+.roulette-results-panel {
+    left: 2.3%;
+    width: min(31vw, 500px);
+}
+
+.roulette-log-panel {
+    right: 2.3%;
+    width: min(27vw, 430px);
+}
+
+.roulette-results-panel h2,
+.roulette-log-panel h2 {
+    margin: 0 0 8px;
+    color: var(--casino-gold-pale);
+    font-size: 11px;
+    letter-spacing: .12em;
+}
+
+.roulette-log-panel p {
+    margin: 0 0 10px;
+    color: #bdb0c9;
+    font-size: 10px;
+}
+
+.roulette-results-body {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 7px;
+    max-height: 31vh;
+    overflow: auto;
+}
+
+.roulette-history-item,
+.roulette-log-symbol {
+    display: grid;
+    aspect-ratio: 1;
+    border: 1px solid rgba(178, 105, 255, .23);
+    border-radius: 10px;
+    background: rgba(41, 25, 62, .48);
+    place-items: center;
+}
+
+.roulette-history-image,
+.roulette-symbol-image {
+    width: 66%;
+    height: 66%;
+    object-fit: contain;
+}
+
+.roulette-log-sequence {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 7px;
+}
+
+.roulette-results-body.is-grouped {
+    grid-template-columns: repeat(4, 1fr);
+    overflow: visible;
+}
+
+.roulette-group-column {
+    min-height: 140px;
+    padding: 7px 4px;
+    border: 1px solid rgba(160, 94, 231, .18);
+    border-radius: 10px;
+    background: rgba(26, 15, 38, .50);
+}
+
+.roulette-group-head {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    align-items: center;
+    gap: 3px;
+}
+
+.roulette-group-head strong {
+    color: var(--casino-gold-pale);
+    font-size: 18px;
+}
+
+.roulette-group-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.roulette-group-stack i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #af65ff;
+    box-shadow: 0 0 7px rgba(175,101,255,.55);
+}
+
+.roulette-group-stack span {
+    color: #ff8d9a;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+.roulette-symbol-selectors {
+    position: absolute;
+    bottom: 16%;
+    left: 50%;
+    z-index: 18 !important;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(105px, 1fr));
+    gap: 8px;
+    width: min(610px, 58vw);
+    transform: translateX(-50%);
+}
+
+.roulette-symbol-button {
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    align-items: center;
+    gap: 7px;
+    min-height: 55px;
+    padding: 7px 10px;
+    border: 1px solid rgba(179,103,255,.35);
+    border-radius: 13px;
+    color: #eee6f4;
+    background: rgba(8,5,13,.86);
+    cursor: pointer;
+}
+
+.roulette-symbol-button .roulette-symbol-image {
+    width: 38px;
+    height: 38px;
+}
+
+.roulette-symbol-button.is-selected {
+    border-color: rgba(247,204,99,.82);
+    color: #fff2be;
+    box-shadow: 0 0 19px rgba(245,198,91,.24), inset 0 0 18px rgba(174,98,255,.10);
+}
+
+.roulette-controls {
+    position: absolute;
+    bottom: 7.5%;
+    left: 50%;
+    z-index: 20 !important;
+    display: flex;
+    gap: 10px;
+    transform: translateX(-50%);
+}
+
+.roulette-lens-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.roulette-lens-icon {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+
+.roulette-hidden-mechanism {
+    position: absolute;
+    top: 29%;
+    left: 50%;
+    z-index: 16 !important;
+    width: min(34vw, 560px);
+    max-height: 53vh;
+    object-fit: contain;
+    opacity: 0;
+    filter: drop-shadow(0 0 26px rgba(246,192,70,.50));
+    transform: translateX(-50%) scale(.78);
+    transition: opacity .65s ease, transform .75s cubic-bezier(.2,.8,.2,1);
+    pointer-events: none;
+}
+
+.roulette-hidden-mechanism.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+.casino-pattern-feedback {
+    right: 2.3%;
+    bottom: 3%;
+}
+
+/* =========================================================
+   ИСПЫТАНИЕ 3 · ОХРАННАЯ СЕТЬ
+   Быстрая подгонка под финальный фон:
+   --security-grid-left / top / width
+   ========================================================= */
+
+.casino-security-screen {
+    --security-grid-left: 49.5%;
+    --security-grid-top: 56%;
+    --security-grid-width: min(33vw, 555px);
+}
+
+.security-mirror-grid {
+    position: absolute;
+    top: var(--security-grid-top);
+    left: var(--security-grid-left);
+    z-index: 13 !important;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: clamp(5px, .6vw, 10px);
+    width: var(--security-grid-width);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+}
+
+.security-mirror {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    padding: 0;
+    border: 1px solid rgba(125, 103, 178, .20);
+    border-radius: 50%;
+    background: rgba(5, 5, 12, .18);
+    cursor: pointer;
+    transition: filter .2s ease, box-shadow .2s ease, border-color .2s ease;
+    place-items: center;
+}
+
+.security-mirror:not(.is-locked):hover,
+.security-mirror:not(.is-locked):focus-visible {
+    outline: none;
+    border-color: rgba(108,231,255,.62);
+    box-shadow: 0 0 17px rgba(103,222,255,.25);
+}
+
+.security-mirror-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform .32s cubic-bezier(.2,.8,.2,1);
+    pointer-events: none;
+}
+
+.security-mirror.orientation-slash .security-mirror-image { transform: rotate(0deg); }
+.security-mirror.orientation-back .security-mirror-image { transform: rotate(90deg); }
+
+.security-mirror::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 58%;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, rgba(125,228,255,.80), transparent);
+    box-shadow: 0 0 8px rgba(108,226,255,.55);
+    content: "";
+    transform: translate(-50%,-50%) rotate(-45deg);
+    transition: transform .32s cubic-bezier(.2,.8,.2,1);
+    pointer-events: none;
+}
+
+.security-mirror.orientation-back::after {
+    transform: translate(-50%,-50%) rotate(45deg);
+}
+
+.security-mirror.is-locked {
+    cursor: default;
+    filter: saturate(.75) brightness(.83);
+}
+
+.security-lock-mark {
+    position: absolute;
+    top: 7%;
+    right: 9%;
+    color: #e3b95c;
+    font-style: normal;
+    font-size: 10px;
+    text-shadow: 0 0 8px rgba(246,198,91,.55);
+}
+
+.security-mirror.is-hinted {
+    border-color: #7df0ff;
+    box-shadow: 0 0 28px rgba(93,229,255,.72), inset 0 0 18px rgba(102,211,255,.18);
+    animation: security-hint-pulse .45s ease-in-out 4 alternate;
+}
+
+@keyframes security-hint-pulse {
+    from { filter: brightness(.9); }
+    to { filter: brightness(1.45); }
+}
+
+.security-beam-svg {
+    position: absolute;
+    inset: 0;
+    z-index: 17 !important;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.security-beam-path {
+    fill: none;
+    stroke: #b379ff;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 5px #7f5cff) drop-shadow(0 0 12px rgba(105,226,255,.85));
+    opacity: 0;
+    transition: opacity .22s ease;
+}
+
+.security-beam-fired .security-beam-path,
+.security-signal-captured .security-beam-path {
+    opacity: 1;
+}
+
+.security-source {
+    position: absolute;
+    left: var(--security-grid-left);
+    bottom: 3.3%;
+    z-index: 18 !important;
+    display: grid;
+    place-items: center;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.security-source span {
+    display: block;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0 10%, #c083ff 26%, #6d3fff 58%, rgba(109,63,255,.12) 72%);
+    box-shadow: 0 0 26px rgba(166,104,255,.88);
+}
+
+.security-source small {
+    margin-top: 4px;
+    color: #cdb5e8;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .10em;
+}
+
+.security-chip-target {
+    position: absolute;
+    top: 54.5%;
+    right: 12.5%;
+    z-index: 19 !important;
+    display: grid;
+    width: clamp(90px, 8vw, 130px);
+    border: 0;
+    background: transparent;
+    place-items: center;
+    pointer-events: none;
+}
+
+.security-chip-image {
+    width: 100%;
+    object-fit: contain;
+    filter: brightness(.65) saturate(.65);
+    transition: filter .45s ease, transform .45s ease;
+}
+
+.security-chip-target span {
+    margin-top: -8px;
+    color: #bba7cb;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .10em;
+}
+
+.security-chip-target.is-charged .security-chip-image {
+    filter: brightness(1.35) saturate(1.15) drop-shadow(0 0 20px rgba(118,231,255,.85));
+    transform: scale(1.08);
+}
+
+.security-chip-target.is-charged span { color: #78eaff; }
+
+.security-alarm-crystal {
+    position: absolute;
+    z-index: 14 !important;
+    width: clamp(72px, 6.5vw, 110px);
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(255,59,76,.22));
+    transition: filter .2s ease, transform .2s ease;
+    pointer-events: none;
+}
+
+.security-alarm-left { left: 21%; bottom: 18%; }
+.security-alarm-right { right: 19%; bottom: 16%; }
+
+.security-alarm-crystal.is-hit {
+    filter: brightness(1.65) drop-shadow(0 0 27px rgba(255,48,66,.88));
+    transform: scale(1.10);
+}
+
+.security-alarm-active .casino-background {
+    animation: casino-alarm-dark .25s ease-in-out 3 alternate;
+}
+
+@keyframes casino-alarm-dark {
+    from { filter: brightness(1); }
+    to { filter: brightness(.35) saturate(.65); }
+}
+
+.casino-security-vault {
+    position: absolute;
+    top: 14%;
+    left: 50%;
+    z-index: 11 !important;
+    width: min(25vw, 410px);
+    max-height: 35vh;
+    object-fit: contain;
+    opacity: 0;
+    filter: drop-shadow(0 0 18px rgba(170,98,255,.28));
+    transform: translateX(-50%) scale(.95);
+    transition: opacity .45s ease, transform .45s ease, filter .3s ease;
+    pointer-events: none;
+}
+
+.casino-security-vault.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+.casino-security-vault.is-key-ready {
+    cursor: pointer;
+    filter: brightness(1.15) drop-shadow(0 0 24px rgba(247,202,94,.58));
+    pointer-events: auto;
+}
+
+.casino-security-vault-open {
+    z-index: 12 !important;
+}
+
+.casino-security-seal {
+    position: absolute;
+    top: 23%;
+    left: 50%;
+    z-index: 15 !important;
+    width: clamp(86px, 7.2vw, 125px);
+    object-fit: contain;
+    opacity: 0;
+    filter: drop-shadow(0 0 22px rgba(255,209,92,.82));
+    transform: translateX(-50%) scale(.5) rotate(-12deg);
+    transition: opacity .55s ease .2s, transform .65s cubic-bezier(.2,.9,.2,1.2) .2s;
+    pointer-events: none;
+}
+
+.casino-security-seal.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) rotate(0deg);
+}
+
+.security-key-button {
+    position: absolute;
+    right: 3%;
+    bottom: 20%;
+    z-index: 23 !important;
+    display: grid;
+    width: clamp(125px, 11vw, 180px);
+    padding: 8px;
+    border: 1px solid rgba(244,198,87,.48);
+    border-radius: 14px;
+    color: #f5ddb0;
+    background: rgba(8,5,13,.84);
+    cursor: pointer;
+    place-items: center;
+}
+
+.security-key-image {
+    width: 90px;
+    max-width: 70%;
+    object-fit: contain;
+}
+
+.security-key-button span {
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+.security-key-button.is-selected {
+    border-color: #ffd976;
+    box-shadow: 0 0 20px rgba(255,210,99,.35);
+}
+
+.security-controls {
+    position: absolute;
+    left: 50%;
+    bottom: 6.5%;
+    z-index: 22 !important;
+    display: flex;
+    gap: 10px;
+    transform: translateX(-50%);
+}
+
+.casino-security-feedback {
+    right: 2.2%;
+    bottom: 3%;
+    width: min(355px, 27vw);
+}
+
+/* =========================================================
+   ИГРА 3 · ПОКЕР ЛЖЕЦОВ
+   ========================================================= */
+
+.casino-poker-liars-screen {
+    --poker-rich-left: 10.5%;
+    --poker-rich-bottom: 25%;
+    --poker-rich-width: min(17vw, 285px);
+
+    --poker-golem-left: 33.2%;
+    --poker-golem-bottom: 24%;
+    --poker-golem-width: min(17vw, 285px);
+
+    --poker-incognito-left: 54.2%;
+    --poker-incognito-bottom: 24%;
+    --poker-incognito-width: min(17vw, 285px);
+
+    --poker-lady-right: 8.2%;
+    --poker-lady-bottom: 24%;
+    --poker-lady-width: min(18vw, 300px);
+}
+
+
+/* =========================================================
+   ПЕРСОНАЖИ
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-character {
+    position: absolute;
+
+    z-index: 10 !important;
+
+    max-height: 55vh;
+
+    object-fit: contain;
+
+    pointer-events: none;
+    user-select: none;
+
+    filter:
+        drop-shadow(0 18px 22px rgba(0,0,0,.72));
+
+    transition:
+        transform .28s ease,
+        filter .28s ease,
+        opacity .28s ease;
+}
+
+
+/* БОГАЧ */
+
+.casino-poker-liars-screen .poker-rich-man {
+    left: -30px;
+    bottom: 40%;
+
+    width: 31%;
+}
+
+
+/* ГОЛЕМ */
+
+.casino-poker-liars-screen .poker-golem {
+    left: 25%;
+    bottom: 43%;
+
+    width: 31%;
+}
+
+
+/* ИНКОГНИТО */
+
+.casino-poker-liars-screen .poker-incognito {
+    left: 50%;
+    bottom: 43%;
+
+    width: 31%;
+}
+
+
+/* ГОСПОЖА */
+
+.casino-poker-liars-screen .poker-lady {
+    right:-30px;
+    bottom: 48%;
+
+    width: 31%;
+    transform:
+        rotate(10deg);
+}
+
+
+/* =========================================================
+   ГОВОРЯЩИЙ ПЕРСОНАЖ
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-character.is-talking {
+    filter:
+        drop-shadow(0 18px 24px rgba(0,0,0,.76))
+        drop-shadow(0 0 23px rgba(186,98,255,.36));
+
+    transform:
+        translateY(-5px)
+        scale(1.012);
+}
+
+.casino-poker-liars-screen .poker-lady.is-talking {
+    transform:
+        translateY(-5px)
+        scale(1.012)
+        rotate(10deg);
+}
+
+/* =========================================================
+   ОБЩАЯ КАРТА
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-card {
+    position: absolute;
+
+    width: clamp(58px, 5.4vw, 88px);
+
+    height: auto;
+
+    object-fit: contain;
+
+    z-index: 12 !important;
+
+    user-select: none;
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 7px 10px rgba(0,0,0,.64));
+
+    transform-origin: center center;
+}
+
+
+/* =========================================================
+   РУБАШКИ NPC
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-npc-card {
+    width: 7%;
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+/* БОГАЧ */
+
+.casino-poker-liars-screen .poker-rich-card-1 {
+    left: 12.5%;
+    top: 50%;
+
+    transform:
+        rotate(-10deg);
+}
+
+.casino-poker-liars-screen .poker-rich-card-2 {
+    left: 14.8%;
+    top: 50.8%;
+
+    transform:
+        rotate(6deg);
+}
+
+
+/* ГОЛЕМ */
+
+.casino-poker-liars-screen .poker-golem-card-1 {
+    left: 38%;
+    top: 43%;
+
+    transform:
+        rotate(-10deg);
+}
+
+.casino-poker-liars-screen .poker-golem-card-2 {
+    left: 41%;
+    top: 42%;
+
+    transform:
+        rotate(7deg);
+}
+
+
+/* ИНКОГНИТО */
+
+.casino-poker-liars-screen .poker-incognito-card-1 {
+    left: 62.3%;
+    top: 42%;
+
+    transform:
+        rotate(-9deg);
+}
+
+.casino-poker-liars-screen .poker-incognito-card-2 {
+    left: 64.5%;
+    top: 43%;
+
+    transform:
+        rotate(7deg);
+}
+
+
+/* ГОСПОЖА */
+
+.casino-poker-liars-screen .poker-lady-card-1 {
+    left: 78.1%;
+    top: 50%;
+
+    transform:
+        rotate(-10deg);
+}
+
+.casino-poker-liars-screen .poker-lady-card-2 {
+    left: 80.3%;
+    top: 49%;
+
+    transform:
+        rotate(7deg);
+}
+
+
+/* =========================================================
+   ПОЯВЛЕНИЕ РУБАШЕК
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-card-enter {
+    animation:
+        poker-card-enter .55s cubic-bezier(.18,.78,.18,1) both;
+}
+
+@keyframes poker-card-enter {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-16px)
+            scale(.72)
+            rotate(0deg);
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   КАРТЫ ТАКУ
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-taku-card {
+    width: 10%;
+
+    z-index: 14 !important;
+}
+
+
+/* РУБАШКИ ДО ОТКРЫТИЯ */
+
+.casino-poker-liars-screen .poker-taku-card-1 {
+    left: 43.2%;
+    top: 72.2%;
+
+    transform:
+        rotate(-12deg);
+}
+
+.casino-poker-liars-screen .poker-taku-card-2 {
+    left: 45.8%;
+    top: 71.8%;
+
+    transform:
+        rotate(7deg);
+}
+
+
+/* НАСТОЯЩИЕ КАРТЫ ТАКУ */
+
+.casino-poker-liars-screen .poker-taku-card-real {
+    width: 10%;
+
+    z-index: 15 !important;
+
+    filter:
+        drop-shadow(0 8px 11px rgba(0,0,0,.68));
+}
+
+.casino-poker-liars-screen .poker-taku-real-card-1 {
+    left: 40%;
+    top: 72.2%;
+
+    transform:
+        rotate(-12deg);
+}
+
+.casino-poker-liars-screen .poker-taku-real-card-2 {
+    left: 45.8%;
+    top: 71.8%;
+
+    transform:
+        rotate(7deg);
+}
+
+
+/* =========================================================
+   ЦЕНТРАЛЬНЫЕ СЛОТЫ
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-community-area {
+    position: absolute;
+
+    left: 29.5%;
+    top: 53%;
+
+    z-index: 11 !important;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: clamp(3px, .35vw, 7px);
+
+    width: 41%;
+
+    height: 17%;
+
+    pointer-events: none;
+}
+
+
+.casino-poker-liars-screen .poker-community-slot {
+    position: relative;
+
+    width: 18%;
+
+    height: 100%;
+
+    opacity: 0;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,255,255,.012);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(246,203,102,.05);
+
+    transform:
+        translateY(-9px)
+        scale(.93);
+
+    transition:
+        opacity .35s ease,
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+
+.casino-poker-liars-screen .poker-community-slot.is-visible {
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(246,203,102,.18),
+        0 0 13px rgba(246,203,102,.08);
+}
+
+
+.casino-poker-liars-screen .poker-community-card {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.72);
+
+    opacity: 0;
+
+    transition:
+        opacity .35s ease,
+        transform .42s cubic-bezier(.18,.78,.18,1);
+
+    filter:
+        drop-shadow(0 8px 11px rgba(0,0,0,.66));
+}
+
+
+.casino-poker-liars-screen .poker-community-card.is-visible {
+    opacity: 1;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+}
+
+
+/* =========================================================
+   КАРТА ВНЕ ИГРЫ
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-out-of-play-panel {
+    position: absolute !important;
+
+    left: -4vw !important;
+    bottom: 3% !important;
+
+    z-index: 50 !important;
+
+    width: 22vw !important;
+    aspect-ratio: 1 / .72;
+
+    opacity: 0;
+
+    transform:
+        translateY(12px)
+        scale(.94);
+
+    transition:
+        opacity .45s ease,
+        transform .45s ease;
+
+    pointer-events: none;
+}
+
+
+.casino-poker-liars-screen
+.poker-out-of-play-panel.is-visible {
+    opacity: 1 !important;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+.casino-poker-liars-screen
+.poker-out-of-play-panel-image {
+    position: absolute !important;
+
+    left: 0 !important;
+    top: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: contain !important;
+
+    display: block !important;
+
+    pointer-events: none !important;
+}
+
+
+.casino-poker-liars-screen .poker-out-of-play-panel.is-visible {
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+.casino-poker-liars-screen .poker-out-of-play-card-slot {
+    position: absolute;
+
+    left: 50%;
+    top: 48%;
+
+    width: 42%;
+    height: 70%;
+
+    transform:
+        translate(-50%, -50%);
+
+    pointer-events: none;
+}
+
+
+.casino-poker-liars-screen .poker-out-of-play-card {
+    position: absolute;
+
+    left: 50%;
+    top: 58%;
+
+    width: 70%;
+    height: 70%;
+
+    object-fit: contain;
+
+    transform:
+        translate(-50%, -50%);
+
+    filter:
+        drop-shadow(0 7px 9px rgba(0,0,0,.68));
+}
+
+
+/* =========================================================
+   ТРИ КНОПКИ СПРАВА ВНИЗУ
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-controls {
+    position: absolute;
+
+    right: 2.5%;
+    bottom: 1%;
+
+    z-index: 40 !important;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 6px;
+
+    width: clamp(145px, 12vw, 195px);
+}
+
+
+/* Общий вид */
+
+.casino-poker-liars-screen .poker-action-button {
+    min-height: 42px;
+
+    border: 0;
+
+    background-color:
+        transparent;
+
+    background-repeat:
+        no-repeat;
+
+    background-position:
+        center;
+
+    background-size:
+        contain;
+
+    box-shadow:
+        none;
+
+    color: transparent;
+
+    font-size: 0;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        filter .2s ease,
+        opacity .2s ease;
+}
+
+.casino-poker-liars-screen .poker-action-button:not(.is-visible) {
+    display: none !important;
+}
+
+.casino-poker-liars-screen .poker-action-button.is-visible {
+    display: block !important;
+
+    width: 100%;
+    min-height: 54px;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    pointer-events: auto;
+}
+
+
+/* КТО ВРЕТ */
+
+.casino-poker-liars-screen .poker-choice-button {
+    min-height: 42px;
+
+    border: 0;
+
+    background:
+        url("../assets/images/poker_liar_choice_button.png")
+        center / contain
+        no-repeat;
+
+    color: transparent;
+    font-size: 0;
+
+    box-shadow: none;
+}
+
+
+/* КОМБИНАЦИИ */
+
+.casino-poker-liars-screen .poker-combinations-button {
+    background-image:
+        url("../assets/images/poker_combinations_button.png");
+}
+
+
+/* РЕПЛИКИ */
+
+.casino-poker-liars-screen .poker-dialogue-button {
+    background-image:
+        url("../assets/images/poker_dialogue_button.png");
+}
+
+
+.casino-poker-liars-screen .poker-action-button:hover,
+.casino-poker-liars-screen .poker-action-button:focus-visible {
+    outline: none;
+
+    transform:
+        translateY(-2px)
+        scale(1.02);
+
+    filter:
+        brightness(1.16)
+        drop-shadow(0 0 12px rgba(246,204,102,.24));
+}
+
+
+.casino-poker-liars-screen .poker-action-button.is-pulsing {
+    animation:
+        poker-button-pulse
+        .85s ease-in-out
+        2 alternate;
+}
+
+
+@keyframes poker-button-pulse {
+
+    from {
+        filter:
+            brightness(1)
+            drop-shadow(0 0 2px rgba(246,204,102,.08));
+    }
+
+    to {
+        filter:
+            brightness(1.28)
+            drop-shadow(0 0 18px rgba(246,204,102,.52));
+    }
+}
+
+
+/* =========================================================
+   ПАНЕЛИ
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-overlay-panel {
+    position: absolute;
+
+    right: 2.3%;
+    bottom: 17%;
+
+    z-index: 50 !important;
+
+    width: min(390px, 30vw);
+
+    min-height: 250px;
+
+    background-repeat:
+        no-repeat;
+
+    background-position:
+        center;
+
+    background-size:
+        100% 100%;
+
+    filter:
+        drop-shadow(0 18px 35px rgba(0,0,0,.68));
+
+    animation:
+        poker-panel-open
+        .35s ease both;
+}
+
+
+.casino-poker-liars-screen
+.poker-combinations-panel {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+    width: 65%;
+
+    min-height: 300px;
+
+    background-image:
+        url("../assets/images/poker_combinations_panel.png");
+}
+
+
+.casino-poker-liars-screen
+.poker-dialogue-panel {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 40%;
+    aspect-ratio: 1178 / 1248;
+
+    z-index: 55 !important;
+}
+
+.casino-poker-liars-screen
+.poker-dialogue-panel-image {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: fill;
+
+    pointer-events: none;
+}
+
+панель кто врет
+.casino-poker-liars-screen
+.poker-liar-choice-panel {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: min(410px, 31vw);
+
+    aspect-ratio: 1178 / 1248;
+
+    z-index: 70 !important;
+
+    animation: none;
+}
+
+
+.casino-poker-liars-screen
+.poker-liar-choice-panel-image {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: fill;
+
+    pointer-events: none;
+}
+
+
+@keyframes poker-panel-open {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.96);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   ТЕКСТ ПАНЕЛИ РЕПЛИК
+   ========================================================= */
+
+.casino-poker-liars-screen
+.poker-dialogue-panel-text {
+
+    position: absolute;
+
+    /*
+     * ЗДЕСЬ МЕНЯЕМ ПОЛОЖЕНИЕ ВСЕГО ТЕКСТА
+     *
+     * top    right    bottom    left
+     */
+    inset:
+        18% 1% 1% 43%;
+
+    overflow: visible;
+
+    color: #f6ecd9;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(15px, 1.15vw, 22px);
+
+    font-weight: 700;
+
+    line-height:1.2;
+
+    text-align: left;
+
+    z-index: 5;
+}
+
+
+.casino-poker-liars-screen
+.poker-dialogue-panel-text > div {
+
+    min-height: 15%;
+
+    margin-bottom: 2%;
+
+    display: flex;
+
+    align-items: center;
+}
+
+/* =========================================================
+   КНОПКИ ВНУТРИ ПАНЕЛИ ВЫБОРА
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-choice-hit {
+    position: absolute;
+
+    z-index: 10;
+
+    display: none;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+
+    background:
+        transparent;
+
+    cursor: pointer;
+}
+
+
+/*
+ * Пока ставим четыре области по строкам панели.
+ * Потом при необходимости подгоним под фактический PNG.
+ */
+
+.casino-poker-liars-screen
+.poker-choice-hit-richMan {
+    left: 12%;
+    top: 17%;
+
+    width: 76%;
+    height: 15%;
+}
+
+
+.casino-poker-liars-screen
+.poker-choice-hit-golem {
+    left: 12%;
+    top: 35%;
+
+    width: 76%;
+    height: 15%;
+}
+
+
+.casino-poker-liars-screen
+.poker-choice-hit-incognito {
+    left: 12%;
+    top: 53%;
+
+    width: 76%;
+    height: 15%;
+}
+
+
+.casino-poker-liars-screen
+.poker-choice-hit-lady {
+    left: 12%;
+    top: 71%;
+
+    width: 76%;
+    height: 15%;
+}
+
+
+/* =========================================================
+   ВЫБРАННЫЙ / ОШИБОЧНЫЙ / ПРАВИЛЬНЫЙ ПЕРСОНАЖ
+   ========================================================= */
+
+.casino-poker-liars-screen
+.poker-player-wrong {
+    filter:
+        saturate(.72)
+        brightness(.78)
+        drop-shadow(0 0 20px rgba(255,78,93,.78));
+
+    animation:
+        poker-wrong-shake
+        .42s ease;
+}
+
+
+.casino-poker-liars-screen
+.poker-player-correct {
+    filter:
+        brightness(1.12)
+        drop-shadow(0 0 24px rgba(255,213,101,.85))
+        drop-shadow(0 0 34px rgba(181,98,255,.32));
+
+    animation:
+        poker-correct-glow
+        1.1s ease-in-out
+        infinite alternate;
+}
+
+
+@keyframes poker-wrong-shake {
+
+    0%,
+    100% {
+        transform:
+            translateX(0);
+    }
+
+    25% {
+        transform:
+            translateX(-5px);
+    }
+
+    75% {
+        transform:
+            translateX(5px);
+    }
+}
+
+
+@keyframes poker-correct-glow {
+
+    from {
+        filter:
+            brightness(1.05)
+            drop-shadow(0 0 13px rgba(255,213,101,.48));
+    }
+
+    to {
+        filter:
+            brightness(1.2)
+            drop-shadow(0 0 30px rgba(255,213,101,.92));
+    }
+}
+
+
+/* =========================================================
+   ПОДТВЕРЖДЕНИЕ ЛОГИКИ
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-feedback {
+    position: absolute;
+
+    left: 50%;
+    bottom: 19%;
+
+    z-index: 45 !important;
+
+    opacity: 0;
+
+    min-width: 210px;
+
+    padding:
+        8px 14px;
+
+    border:
+        1px solid rgba(247,204,95,.40);
+
+    border-radius:
+        10px;
+
+    background:
+        rgba(7,4,10,.88);
+
+    color:
+        #ffe9af;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        15px;
+
+    letter-spacing:
+        .08em;
+
+    text-align:
+        center;
+
+    transform:
+        translateX(-50%);
+
+    pointer-events:
+        none;
+}
+
+.casino-poker-liars-screen .poker-proof {
+    position: absolute;
+
+    left: 3%;
+    bottom: 50%;
+
+    z-index: 45 !important;
+
+    width: min(390px, 30vw);
+
+    padding:
+        16px 20px;
+
+    box-sizing:
+        border-box;
+
+    border:
+        1px solid rgba(247,204,95,.42);
+
+    border-radius:
+        13px;
+
+    background:
+        rgba(7,4,10,.92);
+
+    color:
+        #e8d9c1;
+
+    font-size:
+        clamp(13px, 1vw, 17px);
+
+    line-height:
+        1.55;
+
+    opacity: 0;
+
+    transform:
+        translateY(10px);
+
+    transition:
+        opacity .35s ease,
+        transform .35s ease;
+}
+
+
+.casino-poker-liars-screen .poker-proof.is-visible {
+    opacity: 1;
+
+    transform:
+        translateY(0);
+}
+
+
+.casino-poker-liars-screen .poker-proof-title {
+    margin-bottom:
+        12px;
+
+    color:
+        var(--casino-gold);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        1.12em;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        .06em;
+
+    text-align:
+        center;
+}
+
+
+.casino-poker-liars-screen .poker-proof > div:not(.poker-proof-title) {
+    margin-top:
+        7px;
+}
+
+
+.casino-poker-liars-screen .poker-proof strong {
+    color:
+        var(--casino-gold);
+}
+
+/* =========================================================
+   ФИНАЛ КАЗИНО
+   ========================================================= */
+
+.casino-outro-seal {
+    position: absolute;
+    top: 18%;
+    left: 50%;
+    z-index: 9 !important;
+    width: clamp(110px, 10vw, 165px);
+    object-fit: contain;
+    filter: drop-shadow(0 0 25px rgba(255,211,94,.72));
+    transform: translateX(-50%);
+    animation: casino-seal-float 2.1s ease-in-out infinite alternate;
+}
+
+@keyframes casino-seal-float {
+    from { transform: translate(-50%, 0) rotate(-3deg); }
+    to { transform: translate(-50%, -10px) rotate(3deg); }
+}
+
+/* =========================================================
+   АДАПТАЦИЯ
+   ========================================================= */
+
+@media (max-width: 1100px) {
+    .casino-scene-header { width: min(760px, 76vw); }
+    .casino-feedback { width: min(420px, 38vw); }
+    .casino-lady { width: min(42vw, 580px); }
+    .roulette-results-panel { width: 34vw; }
+    .roulette-log-panel { width: 30vw; }
+    .roulette-symbol-selectors { width: 67vw; }
+    .casino-security-screen { --security-grid-width: min(37vw, 500px); }
+}
+
+@media (max-width: 820px) {
+    .casino-dialogue { width: 88vw; }
+    .casino-dialogue-text { font-size: 16px; }
+    .casino-dialogue .gold-button { min-width: 120px; }
+    .casino-scene-header span { display: none; }
+    .roulette-symbol-selectors { grid-template-columns: repeat(2, 1fr); bottom: 18%; }
+    .roulette-controls { bottom: 7%; }
+    .roulette-results-panel, .roulette-log-panel { top: 20%; }
+    .casino-security-screen { --security-grid-width: min(48vw, 450px); }
+}
+
+/* =========================================================
+   ПЕРЕХОД · ДВЕРЬ КАЗИНО
+   ========================================================= */
+
+.casino-door-transition-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    background: #000;
+}
+
+.casino-door-transition-video {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center center;
+
+    background: #000;
+
+    z-index: 1;
+}
+/* =========================================================
+   ГОЛЕМ · СЦЕНА ПРОПУСКА
+   ========================================================= */
+
+.casino-magic-chips-golem-screen {
+    position: relative;
+}
+
+/* ---------------------------------------------------------
+   ГОЛЕМ
+   Положение взято из старой casino_plan.
+   --------------------------------------------------------- */
+
+.casino-magic-chips-golem-screen .casino-golem {
+    position: absolute;
+
+    left: 2.2%;
+    bottom: 8.2%;
+
+    width: min(32vw, 535px);
+    max-height: 70vh;
+
+    z-index: 5 !important;
+
+    object-fit: contain;
+
+    filter: drop-shadow(0 20px 22px rgba(0,0,0,.70));
+
+    transform: rotate(1deg);
+
+    transition:
+        transform .38s ease,
+        filter .38s ease;
+
+    pointer-events: none;
+}
+
+/* Голем проснулся */
+
+.casino-magic-chips-golem-screen .casino-golem.is-awake {
+    filter:
+        drop-shadow(0 20px 26px rgba(0,0,0,.75))
+        drop-shadow(0 0 18px rgba(154,81,255,.28));
+
+    transform:
+        translate(1.5%, -1%)
+        rotate(1deg)
+        scale(1.015);
+}
+
+/* Голем отвлёкся на автомат */
+
+.casino-magic-chips-golem-screen .casino-golem.is-distracted {
+    transform:
+        translateX(-2%)
+        rotate(-2deg);
+}
+
+.casino-golem-chip {
+    position: absolute;
+
+    left: 22.7%;
+    bottom: 22%;
+
+    width: clamp(48px, 4.6vw, 78px);
+
+    z-index: 30 !important;
+
+    display: block;
+    object-fit: contain;
+
+    filter:
+        drop-shadow(0 0 12px rgba(255,213,102,.48));
+
+    cursor: pointer;
+    pointer-events: auto !important;
+    user-select: none;
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease,
+        filter .2s ease;
+}
+
+.casino-golem-chip:hover {
+    filter:
+        brightness(1.12)
+        drop-shadow(0 0 16px rgba(255,213,102,.72));
+}
+
+.casino-golem-chip.is-collected {
+    opacity: 0;
+
+    transform:
+        translateY(-22px)
+        scale(.7);
+
+    pointer-events: none;
+}
+
+
+/* ---------------------------------------------------------
+   АВТОМАТ
+   Это только невидимый hotspot.
+   Сам автомат уже нарисован на фоне casino_bg.
+   --------------------------------------------------------- */
+
+.casino-golem-machine-hotspot {
+    position: absolute;
+
+    right: 1%;
+    top: 20%;
+
+    width: 17%;
+    height: 41%;
+
+    z-index: 20 !important;
+
+    border: 1px solid transparent;
+    border-radius: 22px;
+
+    background: transparent;
+
+    color: transparent;
+
+    padding: 0;
+
+    cursor: pointer;
+}
+
+.casino-golem-machine-hotspot:hover,
+.casino-golem-machine-hotspot:focus-visible {
+    outline: none;
+
+    border-color: rgba(246, 203, 102, .28);
+
+    background: rgba(246, 203, 102, .03);
+
+    box-shadow:
+        0 0 22px rgba(246,203,102,.17),
+        inset 0 0 18px rgba(177,91,255,.08);
+}
+
+
+/* ---------------------------------------------------------
+   АВТОМАТ ЗАПУЩЕН
+   --------------------------------------------------------- */
+
+.casino-magic-chips-golem-screen.casino-machine-running
+.casino-golem-machine-hotspot {
+    box-shadow:
+        0 0 25px rgba(255,219,117,.25);
+}
+
+/* =========================================================
+   МАГИЧЕСКАЯ АКТИВАЦИЯ ФИШКИ
+   ========================================================= */
+
+.casino-chip-activation {
+    position: absolute;
+    inset: 0;
+
+    z-index: 50 !important;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    transition: opacity .25s ease;
+}
+
+.casino-chip-activation.is-started {
+    opacity: 1;
+}
+
+
+
+
+.casino-chip-activation.is-started::before {
+    opacity: 1;
+
+    transform:
+        translateX(35%)
+        translateY(-12%);
+}
+
+
+.casino-chip-activation-chip {
+    position: absolute;
+    z-index: 55;
+
+    object-fit: contain;
+    height: auto !important;
+
+    opacity: 1;
+
+    pointer-events: auto !important;
+    cursor: pointer;
+
+    /* исходное положение и ориентация */
+    transform:
+        translate(var(--chip-start-x, 0px), var(--chip-start-y, 0px))
+        scale(1)
+        rotate(0deg);
+
+    transform-origin: center center;
+
+    filter:
+        drop-shadow(0 0 12px rgba(255, 215, 110, .55))
+        drop-shadow(0 0 24px rgba(145, 72, 255, .25));
+
+    transition:
+        transform 1.15s cubic-bezier(.18,.78,.18,1),
+        filter .8s ease;
+}
+
+.casino-chip-activation.is-started .casino-chip-activation-chip {
+    transform:
+        translate(var(--chip-dx, 0px), var(--chip-dy, 0px))
+        scale(2.15)
+        rotate(0deg);
+
+    filter:
+        drop-shadow(0 0 18px rgba(255, 225, 130, .9))
+        drop-shadow(0 0 42px rgba(150, 70, 255, .65));
+}
+
+/* ---------------------------------------------------------
+   МАГИЧЕСКИЙ ЗНАК
+   Не круг — четыре золотых луча.
+--------------------------------------------------------- */
+
+.casino-chip-activation::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    z-index: 53;
+
+    width: 4px;
+    height: 110px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            rgba(255, 231, 151, .95),
+            transparent
+        );
+
+    box-shadow:
+        0 0 16px rgba(255, 221, 119, .85),
+        0 0 32px rgba(181, 91, 255, .50);
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(45deg)
+        scaleY(.15);
+
+    transition:
+        opacity .35s ease,
+        transform .85s cubic-bezier(.18,.75,.18,1);
+}
+
+.casino-chip-activation.is-started::after {
+
+    opacity: 1;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(45deg)
+        scaleY(1);
+}
+
+
+/* ---------------------------------------------------------
+   ВТОРОЙ ЛУЧ
+--------------------------------------------------------- */
+
+.casino-chip-activation.is-started {
+    --magic-ray-rotate: -45deg;
+}
+
+
+/* ---------------------------------------------------------
+   ФИНАЛЬНАЯ ВСПЫШКА
+--------------------------------------------------------- */
+
+.casino-chip-activation.is-flash::before {
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            105deg,
+            rgba(255,255,255,0),
+            rgba(255,237,170,.92),
+            rgba(255,255,255,.98),
+            rgba(255,237,170,.92),
+            rgba(255,255,255,0)
+        );
+
+    opacity: 1;
+
+    transform: translateX(0) translateY(0);
+
+    animation:
+        casino-chip-final-flash .55s ease-out forwards;
+}
+
+@keyframes casino-chip-final-flash {
+
+    0% {
+        opacity: 0;
+    }
+
+    18% {
+        opacity: .35;
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+/* =========================================================
+   FIX · УБИРАЕМ ПОЛНОЭКРАННЫЙ ЗОЛОТОЙ ЛУЧ
+   ========================================================= */
+
+.casino-chip-activation {
+    background: transparent !important;
+}
+
+/* Полностью отключаем мой огромный световой слой */
+.casino-chip-activation::before,
+.casino-chip-activation::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Не даём финальной вспышке заливать весь экран */
+.casino-chip-activation.is-flash {
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+}
+
+/* =========================================================
+   ИСПЫТАНИЕ 1 · МАГИЧЕСКИЕ ФИШКИ
+   ========================================================= */
+
+.casino-magic-chips-screen {
+    position: relative;
+    overflow: hidden;
+}
+
+.casino-magic-scales {
+    position: absolute;
+
+    left: 50%;
+    top: 10%;
+
+    width: min(43vw, 700px);
+    max-height: 54vh;
+
+    object-fit: contain;
+
+    transform:
+        translateX(-50%);
+
+    z-index: 8 !important;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 18px 22px rgba(0,0,0,.65))
+        drop-shadow(0 0 18px rgba(255,210,100,.18));
+}
+
+
+/* ---------------------------------------------------------
+   9 ФИШЕК НА СТОЛЕ
+   --------------------------------------------------------- */
+
+.casino-magic-chips-field {
+    position: absolute;
+
+    left: 11%;
+    right: 11%;
+    bottom: 7%;
+
+    height: 42%;
+
+    z-index: 15 !important;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    grid-template-rows:
+        repeat(3, minmax(0, 1fr));
+
+    align-items: center;
+    justify-items: center;
+
+    column-gap: 1.2vw;
+    row-gap: .5vh;
+
+    pointer-events: none;
+}
+
+.casino-magic-chip-button {
+    position: relative;
+
+    width: clamp(68px, 6.2vw, 104px);
+    aspect-ratio: 1;
+
+    display: grid;
+    place-items: center;
+
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    transition:
+        transform .22s ease,
+        filter .22s ease,
+        opacity .22s ease;
+}
+
+.casino-magic-chip-image {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(0 8px 9px rgba(0,0,0,.62))
+        drop-shadow(0 0 7px rgba(255,207,100,.16));
+
+    transition:
+        filter .22s ease,
+        transform .22s ease;
+}
+
+.casino-magic-chip-button:hover {
+    transform:
+        translateY(-5px)
+        scale(1.05);
+}
+
+.casino-magic-chip-button.is-selected {
+    transform:
+        translateY(-8px)
+        scale(1.08);
+}
+
+.casino-magic-chip-button.is-selected
+.casino-magic-chip-image {
+    filter:
+        drop-shadow(0 0 13px rgba(255,226,140,.95))
+        drop-shadow(0 0 25px rgba(153,76,255,.55));
+}
+
+.casino-magic-chip-button.is-on-bowl {
+    opacity: .18;
+    pointer-events: none;
+    transform: scale(.82);
+}
+
+.casino-magic-chip-number {
+    position: absolute;
+
+    right: 1%;
+    bottom: 1%;
+
+    width: 20px;
+    height: 20px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid rgba(247,206,112,.65);
+
+    border-radius: 50%;
+
+    color: #fcebc2;
+
+    background:
+        rgba(12,8,17,.92);
+
+    box-shadow:
+        0 3px 8px rgba(0,0,0,.5);
+
+    font-size: 9px;
+    font-weight: 900;
+
+    pointer-events: none;
+}
+
+
+/* ---------------------------------------------------------
+   ЧАШИ — ТОЛЬКО СТЕКИ БОКОВЫХ PNG
+   --------------------------------------------------------- */
+
+.casino-magic-bowls {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 12 !important;
+
+    pointer-events: none;
+}
+
+.casino-magic-bowl {
+    position: absolute;
+
+    width: 150px;
+    height: 90px;
+
+    display: flex;
+
+    align-items: flex-end;
+    justify-content: center;
+}
+
+/*
+ * Эти четыре значения будут главным местом
+ * подстройки под фактический PNG Весов.
+ */
+
+.casino-magic-bowl-left {
+    left: 34.5%;
+    top: 30%;
+}
+
+.casino-magic-bowl-right {
+    right: 34.5%;
+    top: 30%;
+}
+
+.casino-magic-bowl-chip {
+    position: absolute;
+
+    left: 50%;
+    bottom:
+        calc(
+            var(--stack-index, 0) * 9px
+        );
+
+    width: clamp(70px, 5.2vw, 92px);
+
+    height: auto;
+
+    object-fit: contain;
+
+    transform:
+        translateX(-50%);
+
+    filter:
+        drop-shadow(0 4px 7px rgba(0,0,0,.65));
+}
+
+
+/* ---------------------------------------------------------
+   МАГИЧЕСКИЙ ЭФФЕКТ
+   --------------------------------------------------------- */
+
+.casino-magic-effect {
+    position: absolute;
+
+    z-index: 13 !important;
+
+    width: min(180px, 13vw);
+
+    object-fit: contain;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity .18s ease,
+        transform .28s ease;
+}
+
+.casino-magic-effect.is-visible {
+    opacity: 1;
+}
+
+.casino-magic-effect.is-left {
+    left: 34.5%;
+    top: 30%;
+}
+
+.casino-magic-effect.is-right {
+    right: 34.5%;
+    top: 30%;
+}
+
+
+/* ---------------------------------------------------------
+   СТАТУС
+   --------------------------------------------------------- */
+
+.casino-magic-status {
+    position: absolute;
+
+    left: 50%;
+    top: 12%;
+
+    z-index: 22 !important;
+
+    width: min(470px, 42vw);
+
+    padding:
+        9px 16px;
+
+    border:
+        1px solid rgba(239,193,88,.30);
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(7,4,10,.78);
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.42);
+
+    color:
+        #e9d9c0;
+
+    text-align:
+        center;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        .06em;
+
+    transform:
+        translateX(-50%);
+
+    backdrop-filter:
+        blur(7px);
+}
+
+
+/* ---------------------------------------------------------
+   ЖУРНАЛ
+   --------------------------------------------------------- */
+
+.casino-magic-journal {
+    position: absolute;
+
+    right: 2%;
+    top: 20%;
+
+    z-index: 24 !important;
+
+    width: min(270px, 21vw);
+
+    padding: 12px;
+
+    border:
+        1px solid rgba(178,104,255,.28);
+
+    border-radius: 13px;
+
+    background:
+        rgba(8,5,13,.84);
+
+    box-shadow:
+        0 15px 34px rgba(0,0,0,.45);
+
+    backdrop-filter:
+        blur(7px);
+}
+
+.casino-magic-journal h2 {
+    margin:
+        0 0 9px;
+
+    color:
+        #ffeab0;
+
+    font-size:
+        10px;
+
+    letter-spacing:
+        .11em;
+}
+
+.casino-magic-journal-body {
+    display:
+        grid;
+
+    gap:
+        6px;
+}
+
+.casino-magic-journal-row {
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    padding:
+        6px 7px;
+
+    border-radius:
+        7px;
+
+    background:
+        rgba(65,40,84,.28);
+
+    color:
+        #cbbbd4;
+
+    font-size:
+        9px;
+}
+
+.casino-magic-journal-row strong {
+    color:
+        #f1ddb0;
+
+    font-size:
+        8px;
+
+    text-align:
+        right;
+}
+
+.casino-magic-journal-empty {
+    color:
+        #88798f;
+
+    font-size:
+        9px;
+}
+
+
+/* ---------------------------------------------------------
+   КНОПКИ
+   --------------------------------------------------------- */
+
+.casino-magic-controls {
+    position: absolute;
+
+    left: 50%;
+    bottom: 1.2%;
+
+    z-index: 25 !important;
+
+    display: flex;
+
+    gap: 7px;
+
+    transform:
+        translateX(-50%);
+}
+
+.casino-magic-control {
+    min-width:
+        105px;
+}
+
+.casino-magic-weigh {
+    min-width:
+        120px;
+}
+
+
+/* ---------------------------------------------------------
+   РЕЗУЛЬТАТ
+   --------------------------------------------------------- */
+
+.casino-magic-result {
+    position: absolute;
+
+    left: 50%;
+    top: 70%;
+
+    z-index: 30 !important;
+
+    padding:
+        10px 20px;
+
+    border:
+        1px solid rgba(247,204,95,.38);
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(7,4,10,.88);
+
+    color:
+        #ffe9af;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(14px, 1.3vw, 21px);
+
+    letter-spacing:
+        .08em;
+
+    text-align:
+        center;
+
+    opacity:
+        0;
+
+    transform:
+        translate(-50%, 8px)
+        scale(.94);
+
+    pointer-events:
+        none;
+
+    transition:
+        opacity .3s ease,
+        transform .35s ease;
+}
+
+.casino-magic-result.is-visible {
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0)
+        scale(1);
+}
+
+.casino-magic-result.is-success {
+    border-color:
+        rgba(255,216,112,.72);
+
+    box-shadow:
+        0 0 28px rgba(255,205,84,.27);
+}
+
+.casino-magic-result.is-error {
+    border-color:
+        rgba(207,91,111,.60);
+
+    color:
+        #efb4b4;
+}
+
+
+/* ---------------------------------------------------------
+   ФИНАЛЬНЫЙ ОТВЕТ
+   --------------------------------------------------------- */
+
+.casino-magic-answer {
+    position: absolute;
+
+    left: 50%;
+    top: 52%;
+
+    z-index: 40 !important;
+
+    width: min(560px, 50vw);
+
+    padding:
+        18px 22px 20px;
+
+    border:
+        1px solid rgba(239,192,87,.40);
+
+    border-radius:
+        15px;
+
+    background:
+        rgba(7,4,10,.92);
+
+    box-shadow:
+        0 22px 55px rgba(0,0,0,.60);
+
+    text-align:
+        center;
+
+    transform:
+        translate(-50%, -50%);
+}
+
+.casino-magic-answer h2 {
+    margin:
+        0 0 5px;
+
+    color:
+        #ffeab0;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        20px;
+
+    font-weight:
+        500;
+}
+
+.casino-magic-answer p {
+    margin:
+        0 0 13px;
+
+    color:
+        #ad9cb8;
+
+    font-size:
+        10px;
+}
+
+.casino-magic-answer-numbers {
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(9, 1fr);
+
+    gap:
+        6px;
+
+    margin-bottom:
+        11px;
+}
+
+.casino-magic-number {
+    min-width:
+        0 !important;
+}
+
+.casino-magic-answer-magic {
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    gap:
+        8px;
+
+    margin-bottom:
+        10px;
+}
+
+.casino-magic-choice {
+    min-width:
+        145px;
+}
+
+.casino-magic-confirm {
+    min-width:
+        155px;
+}
+
+.casino-magic-number.is-selected,
+.casino-magic-choice.is-selected {
+    border-color:
+        rgba(255,219,112,.95) !important;
+
+    box-shadow:
+        0 0 17px rgba(255,209,91,.28),
+        inset 0 0 13px rgba(151,75,239,.10);
+}
+
+
+/* ---------------------------------------------------------
+   АКТИВАЦИЯ ФИШКИ ГОЛЕМА
+   НИКАКОГО ОГРОМНОГО ЛУЧА
+   --------------------------------------------------------- */
+
+.casino-chip-activation {
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    z-index: 70 !important;
+
+    overflow: hidden;
+
+    pointer-events: none !important;
+
+    background:
+        transparent !important;
+}
+
+/* Старый луч и старое кольцо полностью отключаем */
+
+.casino-chip-activation::before,
+.casino-chip-activation::after,
+.casino-chip-activation-ring {
+    display: none !important;
+
+    content: none !important;
+
+    opacity: 0 !important;
+
+    animation: none !important;
+}
+
+.casino-chip-activation-chip {
+    transform:
+        translate(0,0)
+        scale(1)
+        rotate(0deg) !important;
+
+    transform-origin:
+        center center !important;
+
+    transition:
+        transform 1s cubic-bezier(.18,.78,.18,1),
+        filter .75s ease !important;
+}
+
+.casino-chip-activation.is-started
+.casino-chip-activation-chip {
+    transform:
+        translate(
+            var(--chip-dx),
+            var(--chip-dy)
+        )
+        scale(1.9)
+        rotate(0deg) !important;
+
+    filter:
+        drop-shadow(0 0 18px rgba(255,229,142,1))
+        drop-shadow(0 0 38px rgba(153,71,255,.74));
+}
+
+
+/* ---------------------------------------------------------
+   ИСКРЫ
+   --------------------------------------------------------- */
+
+.casino-chip-spark {
+    position: absolute;
+
+    width: 3px;
+    height: 11px;
+
+    z-index: 78;
+
+    border-radius: 99px;
+
+    background:
+        #ffe39a;
+
+    box-shadow:
+        0 0 7px rgba(255,218,113,.95);
+
+    opacity:
+        0;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(var(--spark-angle))
+        translateY(0)
+        scale(.4);
+
+    transition:
+        transform .72s cubic-bezier(.15,.8,.2,1)
+            var(--spark-delay),
+        opacity .25s ease
+            var(--spark-delay);
+}
+
+.casino-chip-activation.is-started
+.casino-chip-spark {
+    opacity:
+        1;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(var(--spark-angle))
+        translateY(
+            calc(
+                var(--spark-distance) * -1
+            )
+        )
+        scale(1);
+}
+
+
+/* ---------------------------------------------------------
+   ФИНАЛЬНАЯ ВСПЫШКА
+   --------------------------------------------------------- */
+
+.casino-chip-activation.is-flash {
+    animation:
+        casino-chip-final-flash
+        .20s ease;
+}
+
+@keyframes casino-chip-final-flash {
+
+    0% {
+        filter:
+            brightness(1);
+    }
+
+    40% {
+        filter:
+            brightness(1.35);
+    }
+
+    100% {
+        filter:
+            brightness(1);
+    }
+}
+
+/* =========================================================
+   МАГИЧЕСКАЯ АКТИВАЦИЯ ФИШКИ
+   ========================================================= */
+
+.casino-chip-activation {
+    position: absolute;
+    inset: 0;
+
+    z-index: 50 !important;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    transition: opacity .2s ease;
+}
+
+.casino-chip-activation.is-started {
+    opacity: 1;
+}
+
+
+/* ФИШКА-КОПИЯ */
+
+.casino-chip-activation-chip {
+    position: absolute;
+
+    z-index: 55;
+
+    display: block;
+
+    height: auto !important;
+
+    object-fit: contain;
+
+    opacity: 1;
+
+    transform:
+        translate(0, 0)
+        scale(1)
+        rotate(0deg);
+
+    transform-origin: center center;
+
+    filter:
+        drop-shadow(0 0 10px rgba(255, 215, 110, .55))
+        drop-shadow(0 0 18px rgba(145, 72, 255, .30));
+
+    transition:
+        transform 1.15s cubic-bezier(.18,.78,.18,1),
+        filter .8s ease,
+        opacity .2s ease;
+}
+
+
+/* ПОЛЁТ К ЦЕНТРУ */
+
+.casino-chip-activation.is-started .casino-chip-activation-chip {
+    transform:
+        translate(var(--chip-dx, 0px), var(--chip-dy, 0px))
+        scale(1.35)
+        rotate(0deg);
+
+    filter:
+        brightness(1.18)
+        drop-shadow(0 0 16px rgba(255, 225, 130, .90))
+        drop-shadow(0 0 34px rgba(150, 70, 255, .70));
+}
+
+/* =========================================================
+   FIX · КЛИК ТОЛЬКО ПО ЦЕНТРАЛЬНОЙ ФИШКЕ
+   ========================================================= */
+
+.casino-chip-activation {
+    pointer-events: none !important;
+}
+
+.casino-chip-activation-chip {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+.casino-chip-activation-chip {
+    pointer-events: none !important;
+}
+
+.casino-chip-activation-chip.is-ready-to-click {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+/* =========================================================
+   FIX · ВИДЕО ДВЕРИ ПОВЕРХ СЦЕНЫ
+   ========================================================= */
+
+.casino-door-transition-screen {
+    position: fixed !important;
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+
+    z-index: 999999 !important;
+
+    display: block !important;
+    opacity: 1 !important;
+
+    background: #000 !important;
+
+    pointer-events: auto !important;
+}
+
+.casino-door-transition-video {
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    display: block !important;
+
+    object-fit: cover !important;
+    object-position: center center !important;
+
+    z-index: 1000000 !important;
+
+    background: #000 !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* =========================================================
+   ФИНАЛ ИГРЫ 1 · ПРИГЛАШЕНИЕ В БЛЭКДЖЕК
+   ========================================================= */
+
+.casino-magic-result.casino-blackjack-invite {
+    left: 50%;
+    top: 55%;
+
+    width: min(560px, 46vw);
+
+    padding: 24px 30px 26px;
+
+    border: 1px solid rgba(247,204,95,.58);
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(8,4,13,.96),
+            rgba(24,11,31,.94)
+        );
+
+    box-shadow:
+        0 24px 70px rgba(0,0,0,.64),
+        0 0 35px rgba(174,92,255,.13);
+
+    color: #fff1d1;
+
+    text-align: center;
+
+    letter-spacing: normal;
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, 12px)
+        scale(.96);
+
+    pointer-events: auto;
+
+    transition:
+        opacity .35s ease,
+        transform .35s ease;
+}
+
+.casino-magic-result.casino-blackjack-invite.is-visible {
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0)
+        scale(1);
+}
+
+.casino-blackjack-invite h2 {
+    margin: 0 0 12px;
+
+    color: #ffeab0;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 24px;
+
+    font-weight: 500;
+
+    letter-spacing: .08em;
+}
+
+.casino-blackjack-invite h3 {
+    margin: 12px 0 14px;
+
+    color: #f5c85d;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: clamp(22px, 2vw, 30px);
+
+    font-weight: 600;
+
+    letter-spacing: .08em;
+
+    text-shadow:
+        0 0 14px rgba(255,210,94,.18);
+}
+
+.casino-blackjack-invite p {
+    margin: 7px 0;
+
+    color: #cdbed4;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    letter-spacing: .03em;
+}
+
+.casino-blackjack-accept {
+    margin-top: 18px;
+
+    min-width: 190px;
+
+    font-size: 12px;
+
+    letter-spacing: .10em;
+}
+/* =========================================================
+   МАГИЧЕСКИЙ БЛЭКДЖЕК · НОВАЯ СБОРКА
+   ========================================================= */
+
+.casino-blackjack-screen {
+    overflow: hidden;
+}
+
+.casino-blackjack-screen .casino-stage {
+    overflow: hidden;
+}
+
+/* =========================================================
+   ПЕРСОНАЖИ
+   ========================================================= */
+
+.casino-blackjack-screen
+.casino-blackjack-pirate,
+
+.casino-blackjack-screen
+.casino-blackjack-robot,
+
+.casino-blackjack-screen
+.casino-blackjack-dealer,
+
+.casino-blackjack-screen
+.casino-blackjack-lady {
+
+    position: absolute;
+
+    display: block;
+
+    height: auto;
+
+    object-fit: contain;
+
+    pointer-events: none;
+
+    user-select: none;
+
+    filter:
+        drop-shadow(
+            0 18px 28px rgba(0,0,0,.46)
+        );
+}
+
+.casino-blackjack-screen
+.casino-blackjack-pirate {
+
+    left: 2%;
+    top: 8%;
+
+    width: 31%;
+
+    z-index: 7;
+}
+
+.casino-blackjack-screen
+.casino-blackjack-robot {
+
+    right: 1%;
+    top: 10%;
+
+    width: 31%;
+
+    z-index: 7;
+}
+
+.casino-blackjack-screen
+.casino-blackjack-dealer {
+
+    left: 35.5%;
+    top: 13%;
+
+    width: 29%;
+
+    z-index: 8;
+}
+
+
+/* =========================================================
+   ВЕРХНИЙ СТАТУС
+   ========================================================= */
+
+.casino-blackjack-status-line {
+
+    position: absolute;
+
+    left: 10%;
+    top: 1%;
+
+    z-index: 30;
+
+    transform:
+        translateX(-50%);
+
+    padding:
+        7px 18px;
+
+    border:
+        1px solid rgba(240,191,79,.38);
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(7,4,10,.72);
+
+    color:
+        #f5d57f;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(10px,.75vw,14px);
+
+    font-weight:
+        600;
+
+    letter-spacing:
+        .14em;
+
+    white-space:
+        nowrap;
+
+    pointer-events:
+        none;
+}
+
+/* =========================================================
+   СЧЁТЧИК ФИШЕК
+   ========================================================= */
+
+.casino-blackjack-chip-counter {
+
+    position: absolute;
+
+    right: 3.2%;
+    top: 3.2%;
+
+    z-index: 30;
+
+    padding:
+        8px 13px;
+
+    border:
+        1px solid rgba(238,194,86,.44);
+
+    border-radius:
+        6px;
+
+    background:
+        rgba(8,5,9,.78);
+
+    color:
+        #e8c76c;
+
+    font-size:
+        clamp(10px,.75vw,14px);
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        .12em;
+
+    pointer-events:
+        none;
+}
+
+/* =========================================================
+   ЗОНЫ КАРТ
+   ========================================================= */
+
+.casino-blackjack-zone {
+
+    position: absolute;
+
+    z-index: 20;
+
+    pointer-events: none;
+}
+
+.casino-blackjack-zone.is-pirate {
+
+    left: 16.4%;
+    top: 60%;
+
+    width: 18%;
+}
+
+.casino-blackjack-zone.is-robot {
+
+    right: 16.4%;
+    top: 60%;
+
+    width: 18%;
+}
+
+.casino-blackjack-zone.is-dealer {
+
+    left: 39.5%;
+    top: 40%;
+
+    width: 21%;
+}
+
+.casino-blackjack-zone.is-tuko {
+
+    left: 50%;
+    bottom: 21.2%;
+
+    width: 27%;
+
+    transform:
+        translateX(-50%);
+}
+
+/* =========================================================
+   КАРТЫ
+   ========================================================= */
+
+.casino-blackjack-cards {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: center;
+
+    gap:
+        clamp(3px,.4vw,8px);
+
+    min-height:
+        125px;
+}
+
+.casino-blackjack-card {
+
+    position: relative;
+
+    display: block;
+
+    width:
+        clamp(70px,7.8vw,130px);
+
+    height: auto;
+
+    flex:
+        0 0 auto;
+
+    opacity: 0;
+
+    transform:
+        translateY(-28px)
+        rotate(var(--card-rotate,0deg))
+        scale(.94);
+
+    transition:
+        opacity .24s ease,
+        transform .38s cubic-bezier(.2,.75,.2,1);
+
+    filter:
+        drop-shadow(
+            0 10px 15px rgba(0,0,0,.46)
+        );
+
+    pointer-events:
+        none;
+
+    user-select:
+        none;
+}
+
+.casino-blackjack-card.is-visible {
+
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        rotate(var(--card-rotate,0deg))
+        scale(1);
+}
+
+.casino-blackjack-special-card {
+
+    width:
+        clamp(74px,8.2vw,136px);
+}
+
+/* =========================================================
+   СЧЁТ
+   ========================================================= */
+
+.casino-blackjack-zone-score {
+
+    position: absolute;
+
+    left: 50%;
+
+    z-index: 25;
+
+    min-width:
+        58px;
+
+    padding:
+        7px 12px 8px;
+
+    border:
+        1px solid rgba(238,194,86,.72);
+
+    border-radius:
+        4px 4px 10px 10px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(31,18,13,.96),
+            rgba(9,6,7,.96)
+        );
+
+    color:
+        #f9e1a0;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(15px,1.25vw,23px);
+
+    font-weight:
+        700;
+
+    line-height:
+        1;
+
+    text-align:
+        center;
+
+    transform:
+        translateX(-50%);
+}
+
+.casino-blackjack-zone.is-pirate
+.casino-blackjack-zone-score {
+
+    top: 112%;
+}
+
+.casino-blackjack-zone.is-robot
+.casino-blackjack-zone-score {
+
+    top: 112%;
+}
+
+.casino-blackjack-zone.is-dealer
+.casino-blackjack-zone-score {
+
+    top: 104%;
+}
+
+.casino-blackjack-zone.is-tuko
+.casino-blackjack-zone-score {
+
+    top: 105%;
+}
+
+.casino-blackjack-zone-score.is-hot {
+
+    color:
+        #ffe1a0;
+}
+
+.casino-blackjack-zone-score.is-win {
+
+    color:
+        #fff0b0;
+
+    box-shadow:
+        0 0 20px rgba(255,213,92,.22),
+        inset 0 0 18px rgba(255,213,92,.08);
+}
+
+.casino-blackjack-zone-score.is-bust {
+
+    color:
+        #e9b7a8;
+
+    border-color:
+        rgba(176,96,70,.72);
+}
+
+/* =========================================================
+   РЕАКЦИИ ПЕРСОНАЖЕЙ
+   ========================================================= */
+
+.casino-blackjack-reaction {
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 124%;
+
+    z-index: 27;
+
+    min-width:
+        110px;
+
+    padding:
+        6px 10px;
+
+    border:
+        1px solid rgba(239,194,84,.38);
+
+    border-radius:
+        5px;
+
+    background:
+        rgba(9,5,11,.86);
+
+    color:
+        #d9c9da;
+
+    font-size:
+        clamp(8px,.62vw,12px);
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        .09em;
+
+    text-align:
+        center;
+
+    white-space:
+        nowrap;
+
+    opacity:
+        0;
+
+    transform:
+        translate(-50%,8px)
+        scale(.94);
+
+    transition:
+        opacity .20s ease,
+        transform .20s ease;
+
+    pointer-events:
+        none;
+}
+
+.casino-blackjack-reaction.is-visible {
+
+    opacity: 1;
+
+    transform:
+        translate(-50%,0)
+        scale(1);
+}
+
+.casino-blackjack-reaction.is-turn {
+
+    color:
+        #f5d17a;
+
+    border-color:
+        rgba(245,209,122,.55);
+}
+
+.casino-blackjack-reaction.is-take {
+
+    color:
+        #eed18a;
+
+    border-color:
+        rgba(245,198,86,.48);
+}
+
+.casino-blackjack-reaction.is-pass {
+
+    color:
+        #c3b6cb;
+}
+
+.casino-blackjack-reaction.is-special {
+
+    color:
+        #d8b9ff;
+
+    border-color:
+        rgba(175,107,255,.55);
+
+    box-shadow:
+        0 0 17px rgba(160,82,255,.12);
+}
+
+.casino-blackjack-reaction.is-white {
+
+    color:
+        #fff0bd;
+
+    border-color:
+        rgba(255,236,173,.62);
+}
+
+.casino-blackjack-reaction.is-black {
+
+    color:
+        #ceb4ef;
+
+    border-color:
+        rgba(157,103,225,.58);
+}
+
+.casino-blackjack-reaction.is-win {
+
+    color:
+        #ffe9a3;
+
+    border-color:
+        rgba(255,214,97,.65);
+}
+
+.casino-blackjack-reaction.is-bust {
+
+    color:
+        #e5b0a0;
+
+    border-color:
+        rgba(184,102,76,.60);
+}
+
+/* =========================================================
+   СООБЩЕНИЕ
+   ========================================================= */
+
+.casino-blackjack-message {
+
+    position: absolute;
+
+    left: 50%;
+    top: 15.3%;
+
+    z-index: 35;
+
+    width:
+        min(650px,52vw);
+
+    transform:
+        translateX(-50%);
+
+    padding:
+        10px 18px;
+
+    border:
+        1px solid rgba(237,194,82,.25);
+
+    border-radius:
+        7px;
+
+    background:
+        rgba(7,4,10,.78);
+
+    color:
+        #d7c9d7;
+
+    font-size:
+        clamp(10px,.82vw,15px);
+
+    font-weight:
+        700;
+
+    line-height:
+        1.35;
+
+    text-align:
+        center;
+
+    letter-spacing:
+        .06em;
+
+    pointer-events:
+        none;
+}
+
+.casino-blackjack-message.is-win {
+
+    color:
+        #ffeab0;
+
+    border-color:
+        rgba(249,209,91,.58);
+}
+
+/* =========================================================
+   КНОПКИ
+   ========================================================= */
+
+.casino-blackjack-controls {
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 4.2%;
+
+    z-index: 40;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap:
+        clamp(10px,1.1vw,20px);
+
+    width:
+        min(760px,65vw);
+
+    transform:
+        translateX(-50%);
+}
+
+.casino-blackjack-controls button {
+
+    min-width:
+        clamp(150px,13vw,220px);
+
+    min-height:
+        clamp(48px,4.4vw,70px);
+
+    padding:
+        12px 22px;
+
+    font-size:
+        clamp(10px,.78vw,14px);
+
+    letter-spacing:
+        .10em;
+}
+
+.casino-blackjack-controls button:disabled {
+
+    opacity:
+        .42;
+
+    cursor:
+        default;
+}
+
+.casino-blackjack-next-button {
+
+    min-width:
+        clamp(220px,18vw,300px) !important;
+}
+
+/* =========================================================
+   СТИЧ
+   ========================================================= */
+
+.casino-blackjack-blocked-note {
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 26.5%;
+
+    z-index: 34;
+
+    transform:
+        translateX(-50%);
+
+    padding:
+        7px 13px;
+
+    border:
+        1px solid rgba(183,108,83,.48);
+
+    border-radius:
+        6px;
+
+    background:
+        rgba(17,7,9,.78);
+
+    color:
+        #d8aa98;
+
+    font-size:
+        clamp(8px,.65vw,12px);
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        .10em;
+
+    pointer-events:
+        none;
+}
+
+/* =========================================================
+   ФИНАЛЬНЫЙ ДИАЛОГ
+   ========================================================= */
+
+.casino-blackjack-dialogue {
+
+    position: absolute;
+
+    left: 50%;
+    top: 68%;
+
+    z-index: 50;
+
+    width:
+        min(460px,38vw);
+
+    padding:
+        12px 18px;
+
+    border:
+        1px solid rgba(239,193,83,.42);
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(8,4,12,.88);
+
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.42);
+
+    text-align:
+        center;
+
+    transform:
+        translateX(-50%);
+}
+
+.casino-blackjack-dialogue span {
+
+    display: block;
+
+    margin-bottom:
+        5px;
+
+    color:
+        #eecb73;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        .12em;
+}
+
+.casino-blackjack-dialogue p {
+
+    margin:
+        0;
+
+    color:
+        #e1d5e4;
+
+    font-size:
+        14px;
+
+    line-height:
+        1.45;
+}
+
+/* =========================================================
+   ФИНАЛЬНЫЙ РЕЗУЛЬТАТ
+   ========================================================= */
+
+.casino-blackjack-result-panel {
+
+    position: absolute;
+
+    left: 15%;
+    top: 45%;
+
+    z-index: 80;
+
+    width:
+        min(520px,42vw);
+
+    padding:
+        24px 28px;
+
+    border:
+        1px solid rgba(241,200,90,.62);
+
+    border-radius:
+        14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(8,4,12,.97),
+            rgba(25,12,31,.95)
+        );
+
+    box-shadow:
+        0 28px 70px rgba(0,0,0,.62),
+        0 0 35px rgba(177,91,255,.12);
+
+    text-align:
+        center;
+
+    opacity:
+        0;
+
+    transform:
+        translate(-50%,-46%)
+        scale(.96);
+
+    transition:
+        opacity .3s ease,
+        transform .3s ease;
+
+    pointer-events:
+        none;
+}
+
+.casino-blackjack-result-panel.is-visible {
+
+    opacity:
+        1;
+
+    transform:
+        translate(-50%,-50%)
+        scale(1);
+}
+
+.casino-blackjack-result-panel h2 {
+
+    margin:
+        0 0 9px;
+
+    color:
+        #ffe7a7;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(27px,3vw,48px);
+
+    font-weight:
+        600;
+
+    letter-spacing:
+        .08em;
+}
+
+.casino-blackjack-result-panel p {
+
+    margin:
+        6px 0;
+
+    color:
+        #cfbfd6;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.45;
+}
+
+.casino-blackjack-result-panel strong {
+
+    display:
+        block;
+
+    margin-top:
+        12px;
+
+    color:
+        #f2c85e;
+
+    font-size:
+        12px;
+
+    letter-spacing:
+        .13em;
+}
+
+.casino-blackjack-skip-button {
+
+    min-width:
+        clamp(220px,18vw,310px) !important;
+
+    min-height:
+        clamp(42px,3.4vw,56px) !important;
+
+    font-size:
+        clamp(10px,.72vw,13px) !important;
+
+    opacity:
+        .82;
+
+    letter-spacing:
+        .08em;
+
+    margin-top:
+        4px;
+
+}
+
+.casino-blackjack-skip-button:hover {
+
+    opacity:
+        1;
+
+}
+
+/* =========================================================
+   БЛЭКДЖЕК · СТАВКА ТУКО
+   ========================================================= */
+
+.casino-blackjack-stake-chip {
+
+    position: absolute;
+
+    left: 60%;
+    top: 75%;
+
+    z-index: 35;
+
+    width:
+        clamp(58px, 5.2vw, 88px);
+
+    height: auto;
+
+    object-fit: contain;
+
+    transform:
+        translate(-50%, -50%);
+
+    opacity: 0;
+
+    filter:
+        drop-shadow(
+            0 8px 12px rgba(0,0,0,.55)
+        )
+        drop-shadow(
+            0 0 14px rgba(255,213,95,.30)
+        );
+
+    pointer-events:
+        none;
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+}
+
+.casino-blackjack-stake-chip.is-placed {
+
+    opacity: 1;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+}
+
+.casino-blackjack-screen
+.casino-blackjack-pirate {
+
+    transition:
+        transform 1.1s ease-in,
+        opacity 1.1s ease;
+}
+
+.casino-blackjack-screen
+.casino-blackjack-pirate.is-leaving {
+
+    transform:
+        translateX(-120%);
+
+    opacity:
+        0;
+}
+
+/* =========================================================
+   СТИЧ · БЛОКИРОВКА КАРТЫ
+   ========================================================= */
+
+.casino-blackjack-stich-blocking {
+
+    position: absolute;
+
+    left: 44%;
+    bottom: 5%;
+
+    z-index: 45;
+
+    width:
+        clamp(105px, 11vw, 185px);
+
+    height: auto;
+
+    object-fit: contain;
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, 18px)
+        scale(.78);
+
+    filter:
+        drop-shadow(
+            0 12px 18px rgba(0,0,0,.58)
+        )
+        drop-shadow(
+            0 0 20px rgba(112,196,255,.24)
+        );
+
+    transition:
+        opacity .42s ease,
+        transform .48s cubic-bezier(.2,.8,.2,1),
+        filter .35s ease;
+
+    pointer-events:
+        none;
+}
+
+.casino-blackjack-stich-blocking.is-visible {
+
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0)
+        scale(1);
+
+    filter:
+        drop-shadow(
+            0 14px 20px rgba(0,0,0,.60)
+        )
+        drop-shadow(
+            0 0 30px rgba(112,196,255,.42)
+        );
+}
+
+/* =========================================================
+   БЛЭКДЖЕК · НАСТРОЙКА НАЗВАНИЙ
+   ========================================================= */
+
+.casino-blackjack-zone-title {
+
+    position: absolute;
+
+    left: 10%;
+    top: -34px;
+
+    z-index: 30;
+
+    transform:
+        translateX(-50%);
+
+    color:
+        #f2cf78;
+
+    font-size:
+        clamp(10px,.75vw,14px);
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        .13em;
+
+    text-transform:
+        uppercase;
+
+    white-space:
+        nowrap;
+
+    text-shadow:
+        0 2px 8px rgba(0,0,0,.85);
+
+    pointer-events:
+        none;
+}
+
+.casino-blackjack-zone.is-pirate
+.casino-blackjack-zone-title {
+
+    top: -24px;
+}
+
+.casino-blackjack-zone.is-robot
+.casino-blackjack-zone-title {
+
+    top: -34px;
+}
+
+.casino-blackjack-zone.is-dealer
+.casino-blackjack-zone-title {
+
+    top: -31px;
+}
+
+.casino-blackjack-zone.is-tuko
+.casino-blackjack-zone-title {
+
+    top: -36px;
+}
+
+/* =========================================================
+   БЛЭКДЖЕК · БЫСТРАЯ ПОДГОНКА СЦЕНЫ
+   МЕНЯЕМ ТОЛЬКО ЗДЕСЬ
+   ========================================================= */
+
+/* ПИРАТ — карты */
+.casino-blackjack-zone.is-pirate {
+    left: 10%;
+    top: 53%;
+    width: 18%;
+}
+
+/* РОБОТ — карты */
+.casino-blackjack-zone.is-robot {
+    right: 10%;
+    top: 53%;
+    width: 18%;
+}
+
+/* ТУКО — карты */
+.casino-blackjack-zone.is-tuko {
+    left: 50%;
+    bottom: 21.2%;
+    width: 27%;
+}
+
+/* РАЗМЕР ВСЕХ КАРТ */
+.casino-blackjack-card {
+    width: clamp(70px, 7.8vw, 130px);
+}
+
+/* ОЧКИ */
+.casino-blackjack-zone.is-pirate
+.casino-blackjack-zone-score {
+    top: 112%;
+}
+
+.casino-blackjack-zone.is-robot
+.casino-blackjack-zone-score {
+    top: 112%;
+}
+
+.casino-blackjack-zone.is-tuko
+.casino-blackjack-zone-score {
+    top: 105%;
+}
+
+/* РЕАКЦИИ */
+.casino-blackjack-reaction {
+    top: 133%;
+}
+
+/* ОБЩЕЕ СООБЩЕНИЕ */
+.casino-blackjack-message {
+    top: 7%;
+}
+
+/* КНОПКИ */
+.casino-blackjack-controls {
+    bottom: 4.2%;
+}
+
+/* =========================================================
+   РОБОТ · УХОД ПОСЛЕ ОШИБКИ
+   ========================================================= */
+
+.casino-blackjack-screen
+.casino-blackjack-robot {
+
+    transition:
+        transform 1.1s ease-in,
+        opacity 1.1s ease;
+}
+
+.casino-blackjack-screen
+.casino-blackjack-robot.is-leaving {
+
+    transform:
+        translateX(120%);
+
+    opacity:
+        0;
+}
+
+
+/* =========================================================
+   ГОСПОЖА СЛУЧАЙ · МЕСТО РОБОТА
+   ========================================================= */
+
+.casino-blackjack-screen
+.casino-blackjack-lady {
+
+    right:
+        8%;
+
+    top:
+        10%;
+
+    width:
+        35%;
+
+    z-index:
+        7;
+
+    opacity:
+        0;
+
+    transform:
+        translateX(18%)
+        translateY(8px)
+        scale(.97);
+
+    transition:
+        opacity .95s ease,
+        transform .95s cubic-bezier(.2,.8,.2,1);
+}
+
+.casino-blackjack-screen
+.casino-blackjack-lady.is-seated {
+
+    opacity:
+        1;
+
+    transform:
+        translateX(0)
+        translateY(0)
+        scale(1);
+}
+
+
+/* =========================================================
+   ВТОРАЯ ФИШКА
+   ========================================================= */
+
+.casino-blackjack-second-stake-chip {
+
+    left:
+        65%;
+
+    top:
+        75%;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(7deg)
+        scale(.92);
+}
+
+.casino-blackjack-second-stake-chip.is-placed {
+
+    opacity:
+        1;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(7deg)
+        scale(.92);
+}
+
+/* =========================================================
+   УБИРАЕМ ИМЕНА ИГРОКОВ СО СТОЛА
+   ========================================================= */
+
+.casino-blackjack-zone.is-pirate
+.casino-blackjack-zone-title,
+
+.casino-blackjack-zone.is-robot
+.casino-blackjack-zone-title,
+
+.casino-blackjack-zone.is-tuko
+.casino-blackjack-zone-title {
+    display: none !important;
+}
+/* =========================================================
+   POKER · ИГРОВЫЕ КНОПКИ
+   ========================================================= */
+
+.casino-poker-liars-screen .poker-controls {
+    position: absolute !important;
+    right: 2.5% !important;
+    bottom: 1% !important;
+    z-index: 100 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+
+    gap: 0.5vw !important;
+
+    width: 20vw !important;
+    max-width: 240px !important;
+    min-width: 170px !important;
+
+    pointer-events: auto !important;
+}
+
+.casino-poker-liars-screen .poker-action-button {
+    position: relative !important;
+
+    width: 100% !important;
+    height: auto !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+
+    background: transparent !important;
+
+    display: none !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+
+    box-sizing: border-box !important;
+}
+
+.casino-poker-liars-screen .poker-action-button.is-visible {
+    display: block !important;
+}
+
+.casino-poker-liars-screen .poker-action-button-image {
+    display: block !important;
+
+    width: 100% !important;
+    height: auto !important;
+
+    object-fit: contain !important;
+    pointer-events: none !important;
+}
+
+.casino-poker-liars-screen .poker-action-button:hover {
+    transform:
+        translateY(-2px)
+        scale(1.02);
+
+    filter:
+        brightness(1.16)
+        drop-shadow(0 0 12px rgba(246,204,102,.24));
+}
+
+/* =========================================================
+   POKER · ПАНЕЛЬ «КТО ВРЁТ?»
+   ЦЕНТР ЭКРАНА
+   ========================================================= */
+
+.poker-liar-choice-panel {
+    position: fixed !important;
+
+    left: 50vw !important;
+    top: 50vh !important;
+
+    right: auto !important;
+    bottom: auto !important;
+
+    width: min(31vw, 410px) !important;
+
+    aspect-ratio: 1178 / 1248;
+
+    transform:
+        translate(-50%, -50%) !important;
+
+    z-index: 99999 !important;
+}
+
+
+/* КАРТИНКА ПАНЕЛИ */
+
+.poker-liar-choice-panel-image {
+    position: absolute !important;
+
+    left: 0 !important;
+    top: 0 !important;
+
+    width: 100% !important;
+        object-fit: fill !important;
+
+    pointer-events: none;
+}
+    
+    /* =========================================================
+   POKER · ПАНЕЛЬ «КТО ВРЁТ?»
+   ЦЕНТР ЭКРАНА
+   ========================================================= */
+
+.poker-liar-choice-panel {
+    position: fixed !important;
+
+    left: 30% !important;
+    top: 47% !important;
+
+    right: auto !important;
+    bottom: auto !important;
+
+    width: min(31vw, 410px) !important;
+
+    min-height: 0 !important;
+    height: auto !important;
+
+    aspect-ratio: 2048 / 682;
+
+    transform:
+        translate(-50%, -50%) !important;
+
+    z-index: 99999 !important;
+}
+
+
+/* КАРТИНКА ПАНЕЛИ */
+
+.poker-liar-choice-panel-image {
+    position: absolute !important;
+
+    left: 0 !important;
+    top: 0 !important;
+
+    width: 250% !important;
+    height: 250% !important;
+
+    object-fit: fill !important;
+
+    pointer-events: none;
+}
+
+/* БОГАЧ */
+
+.poker-liar-choice-panel
+.poker-choice-hit-richMan {
+
+    left: 15% !important;
+    top: 55% !important;
+
+    width: 50% !important;
+    height: 150% !important;
+}
+
+
+/* ГОЛЕМ */
+
+.poker-liar-choice-panel
+.poker-choice-hit-golem {
+
+    left: 70% !important;
+    top: 55% !important;
+
+    width: 50% !important;
+    height: 150% !important;
+}
+
+
+/* ИНКОГНИТО */
+
+.poker-liar-choice-panel
+.poker-choice-hit-incognito {
+
+    left: 130% !important;
+    top: 55% !important;
+
+    width: 50% !important;
+    height: 150% !important;
+}
+
+
+/* ГОСПОЖА ШАНС */
+
+.poker-liar-choice-panel
+.poker-choice-hit-lady {
+
+    left: 185% !important;
+    top: 55% !important;
+
+    width: 50% !important;
+    height: 150% !important;
+}
+
+/* =========================================================
+   ПОБЕДА В ПОКЕРЕ · ЗОЛОТОЙ ДОЖДЬ
+   ========================================================= */
+
+.poker-victory-coin-rain {
+    position: absolute;
+    inset: 0;
+    z-index: 9990;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.poker-victory-coin {
+    position: absolute;
+    top: -12vh;
+    left: var(--coin-x);
+
+    width: var(--coin-size);
+    height: calc(var(--coin-size) * 0.62);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            #fff3a6 0%,
+            #ffd85a 28%,
+            #d69b17 68%,
+            #8c5a08 100%
+        );
+
+    border:
+        2px solid rgba(
+            255,
+            239,
+            158,
+            0.9
+        );
+
+    box-shadow:
+        0 0 12px rgba(
+            255,
+            209,
+            63,
+            0.72
+        );
+
+    animation:
+        poker-coin-fall
+        var(--coin-duration)
+        linear
+        var(--coin-delay)
+        forwards;
+}
+
+.poker-victory-coin::after {
+    content: "";
+    position: absolute;
+
+    left: 24%;
+    top: 18%;
+
+    width: 24%;
+    height: 24%;
+
+    border-radius: 50%;
+
+    background: rgba(
+        255,
+        255,
+        220,
+        0.85
+    );
+}
+
+@keyframes poker-coin-fall {
+
+    0% {
+
+        transform:
+            translate3d(
+                0,
+                -15vh,
+                0
+            )
+            rotateY(0deg)
+            rotateZ(0deg);
+
+        opacity: 0;
+    }
+
+    8% {
+        opacity: 1;
+    }
+
+    100% {
+
+        transform:
+            translate3d(
+                var(--coin-drift),
+                118vh,
+                0
+            )
+            rotateY(
+                520deg
+            )
+            rotateZ(
+                var(--coin-spin)
+            );
+
+        opacity: 1;
+    }
+}
+
+.poker-victory-coin-rain.is-frozen
+.poker-victory-coin {
+
+    animation-play-state:
+        paused;
+}
+
+
+/* =========================================================
+   ПОБЕДНЫЙ ЧЁРНЫЙ ЭКРАН
+   ========================================================= */
+
+.poker-victory-blackout {
+    position: absolute;
+    inset: 0;
+
+    z-index: 9995;
+
+    background: #000;
+
+    opacity: 0;
+
+    transition: none;
+    pointer-events: none;
+}
+
+.poker-victory-blackout.is-visible {
+    opacity: 1;
+}
+
+.poker-victory-blackout-text {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    z-index: 9996;
+
+    width: min(
+        82vw,
+        1100px
+    );
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
+
+    text-align: center;
+
+    color: #f4d77c;
+
+    font-family:
+        inherit;
+
+    font-size:
+        clamp(
+            24px,
+            3vw,
+            54px
+        );
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        0.08em;
+
+    text-transform:
+        uppercase;
+
+    opacity: 0;
+
+    transition:
+        opacity
+        0.35s
+        ease;
+
+    pointer-events:
+        none;
+}
+
+.poker-victory-blackout-text.is-visible {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   ФИНАЛ · SECURITY BG
+   ========================================================= */
+
+.casino-final-reveal-veil {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 9998;
+
+    background: #000;
+
+    opacity: 1;
+
+    transition:
+        opacity
+        1.5s
+        ease;
+
+    pointer-events:
+        none;
+}
+
+.casino-final-reveal-veil.is-cleared {
+    opacity: 0;
+}
+
+
+/* =========================================================
+   ГОСПОЖА В ФИНАЛЕ
+   ========================================================= */
+
+.casino-final-lady {
+
+    position:
+        absolute;
+
+    left:
+        5%;
+
+    bottom:
+        4%;
+
+    z-index:
+        20;
+
+    width:
+        min(
+            42vw,
+            580px
+        );
+
+    transform:
+        translateX(-50%);
+
+    object-fit:
+        contain;
+
+    filter:
+        drop-shadow(
+            0 12px 32px
+            rgba(
+                0,
+                0,
+                0,
+                0.55
+            )
+        );
+}
+
+
+/* =========================================================
+   ХРАНИЛИЩЕ
+   ========================================================= */
+
+.casino-final-vault {
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    top:
+        -2vw;
+
+    z-index:
+        12;
+
+    width: 40%;
+
+    transform:
+        translateX(-50%);
+
+    object-fit:
+        contain;
+
+    opacity:
+        0;
+
+    transition:
+        opacity
+        0.45s
+        ease;
+}
+
+.casino-final-vault.is-visible {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   ПЕЧАТЬ
+   ========================================================= */
+
+.casino-final-seal {
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    top:
+        17%;
+
+    z-index:
+        18;
+
+    width:
+        min(
+            13vw,
+            190px
+        );
+
+    transform:
+        translate(
+            -50%,
+            16px
+        )
+        scale(
+            0.7
+        );
+
+    opacity:
+        0;
+
+    object-fit:
+        contain;
+
+    filter:
+        drop-shadow(
+            0 0 28px
+            rgba(
+                255,
+                215,
+                87,
+                0.88
+            )
+        );
+
+    transition:
+    opacity
+    1.5s
+    ease,
+    transform
+    2s
+    cubic-bezier(
+        .2,
+        1.15,
+        .3,
+        1
+    );
+}
+
+.casino-final-seal.is-visible {
+
+    opacity:
+        1;
+
+    transform:
+        translate(
+            -50%,
+            0
+        )
+        scale(
+            1
+        );
+            animation:
+        casino-seal-glow-pulse
+        2.4s
+        ease-in-out
+        infinite;
+}
+
+@keyframes casino-seal-glow-pulse {
+
+    0% {
+
+        filter:
+            drop-shadow(
+                0 0 20px
+                rgba(
+                    255,
+                    215,
+                    87,
+                    0.65
+                )
+            );
+    }
+
+    50% {
+
+        filter:
+            drop-shadow(
+                0 0 48px
+                rgba(
+                    255,
+                    215,
+                    87,
+                    1
+                )
+            )
+            drop-shadow(
+                0 0 85px
+                rgba(
+                    196,
+                    133,
+                    255,
+                    0.38
+                )
+            );
+    }
+
+    100% {
+
+        filter:
+            drop-shadow(
+                0 0 20px
+                rgba(
+                    255,
+                    215,
+                    87,
+                    0.65
+                )
+            );
+    }
+}
+
+
+/* =========================================================
+   СУБТИТРЫ ФИНАЛА
+   ========================================================= */
+
+.casino-final-subtitle {
+    display: none !important;
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    bottom:
+        5%;
+
+    z-index:
+        60;
+
+    width:
+        min(
+            78vw,
+            980px
+        );
+
+    transform:
+        translateX(-50%);
+
+    padding:
+        16px
+        24px;
+
+    text-align:
+        center;
+
+    background:
+        rgba(
+            8,
+            8,
+            10,
+            0.84
+        );
+
+    border:
+        1px solid
+        rgba(
+            242,
+            210,
+            111,
+            0.34
+        );
+
+    border-radius:
+        12px;
+
+    box-shadow:
+        0 12px 40px
+        rgba(
+            0,
+            0,
+            0,
+            0.55
+        );
+
+    opacity:
+        0;
+
+    transition:
+        opacity
+        0.25s
+        ease;
+
+    pointer-events:
+        none;
+}
+
+.casino-final-subtitle.is-visible {
+    opacity: 1;
+}
+
+.casino-final-subtitle-speaker {
+
+    display:
+        block;
+
+    margin-bottom:
+        5px;
+
+    font-size:
+        11px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        0.12em;
+
+    color:
+        #d8b95d;
+}
+
+.casino-final-subtitle-text {
+
+    font-size:
+        clamp(
+            15px,
+            1.2vw,
+            21px
+        );
+
+    line-height:
+        1.45;
+
+    color:
+        #fff;
+}
+
+
+/* =========================================================
+   КАРТОЧКА ПЕЧАТИ
+   ========================================================= */
+.casino-final-seal-card {
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    top:
+        50%;
+
+    z-index:
+        70;
+
+    width:
+        min(
+            88vw,
+            800px
+        );
+
+    min-height:
+        50vh;
+
+    max-height:
+        84vh;
+
+    padding:
+        clamp(30px, 4vw, 68px)
+        clamp(30px, 5vw, 80px);
+
+    box-sizing:
+        border-box;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        )
+        translateY(
+            25px
+        )
+        scale(
+            0.96
+        );
+
+    text-align:
+        center;
+
+    opacity:
+        0;
+
+    overflow:
+        auto;
+
+    transition:
+        opacity
+        0.9s
+        ease,
+        transform
+        1s
+        ease;
+
+    pointer-events:
+        none;
+}
+
+.casino-final-seal-card.is-visible {
+
+    opacity:
+        1;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        )
+        translateY(
+            0
+        )
+        scale(
+            1
+        );
+        
+
+    pointer-events:
+        auto;
+}
+
+
+.casino-final-seal-card h2 {
+
+    margin:
+        8px
+        0
+        14px;
+
+    font-size:
+        clamp(
+            22px,
+            2vw,
+            34px
+        );
+
+    letter-spacing:
+        0.08em;
+}
+
+.casino-final-seal-card-image {
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    min-height:
+        120px;
+
+    margin:
+        5px
+        0
+        15px;
+}
+
+.casino-final-seal-card-image img {
+
+      width:
+        min(
+            280px,
+            22vw
+        );
+
+    filter:
+        drop-shadow(
+            0 0 35px
+            rgba(
+                255,
+                211,
+                94,
+                0.9
+            )
+        );
+}
+
+.casino-final-seal-card p {
+
+    line-height:
+        1.5;
+}
+
+.casino-final-seal-card small {
+
+    display:
+        block;
+
+    margin-top:
+        12px;
+
+    font-size:
+        10px;
+
+    letter-spacing:
+        0.12em;
+
+    opacity:
+        0.72;
+}
+
+.casino-final-claim-button {
+
+    margin-top:
+        18px;
+
+    min-width:
+        210px;
+
+    opacity:
+        0.45;
+
+    transition:
+        opacity
+        0.25s
+        ease,
+        transform
+        0.2s
+        ease,
+        box-shadow
+        0.25s
+        ease;
+}
+
+.casino-final-claim-button.is-ready {
+
+    opacity:
+        1;
+
+    animation:
+        casino-claim-pulse
+        1.3s
+        ease-in-out
+        infinite;
+}
+
+.casino-final-claim-button.is-claimed {
+    opacity: 0.75;
+}
+
+@keyframes casino-claim-pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 0
+            rgba(
+                255,
+                211,
+                94,
+                0
+            );
+    }
+
+    50% {
+        box-shadow:
+            0 0 28px
+            rgba(
+                255,
+                211,
+                94,
+                0.45
+            );
+    }
+}
